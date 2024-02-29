@@ -1,4 +1,5 @@
-game_ai/Backup
-game_ai/OriginalCode
-game_ai/Picture
+# ignore all pycache
+**/__pycache__
 
+# ignore ccs project files
+# TODO: after importing the ccs project
