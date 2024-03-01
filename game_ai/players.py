@@ -1,16 +1,19 @@
 from itertools import count
 import random
 import time
+from awsGateway import awsGateway
 import pygame
 import math
 import connect4
 import numpy as np
+import sys
 from copy import deepcopy
 
 
 class connect4Player(object):
-	def __init__(self, position, seed=0):
+	def __init__(self, position, seed=0, playerName="BLANK"):
 		self.position = position
+		self.playerName = playerName
 		self.opponent = None
 		self.seed = seed
 		random.seed(seed)
@@ -52,6 +55,21 @@ class human2(connect4Player):
 					col = int(math.floor(posx/SQUARESIZE))
 					move[:] = [col]
 					done = True
+
+class humanIoT(connect4Player):
+
+	def play(self, env, move):
+		# TODO: the move should be query from iot 
+		move = []
+		while True:
+			message, errorCode = awsGateway.receiveMsgFromSQS()
+			if errorCode != 0 and message["messageType"] == "move" and message["shadowName"] == self.playerName:
+				move[:] = [int(message["message"])]
+			else:
+				continue
+			if int(move[0]) >= 0 and int(move[0]) <= 6 and env.topPosition[int(move[0])] >= 0:
+				break
+			# TODO: if the input is invalid, send the message back to this shadow, probably not gonna happen
 
 
 class randomAI(connect4Player):
