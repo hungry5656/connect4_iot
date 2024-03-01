@@ -43,7 +43,13 @@ class connect4():
 		width = self.shape[1] * SQUARESIZE
 		height = (self.shape[0] + 1) * SQUARESIZE
 		pygame.init()
-		screen = pygame.display.set_mode(size)
+		if visualize:
+			screen = pygame.display.set_mode(size)
+		else:
+			screen = pygame.display.set_mode(size, flags=pygame.HIDDEN)
+
+		
+
 		# Continue initialization
 		self.board = np.zeros(board_shape).astype('int32')
 		self.topPosition = (
