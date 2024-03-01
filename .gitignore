@@ -3,3 +3,6 @@
 
 # ignore ccs project files
 # TODO: after importing the ccs project
+
+# hide important config file
+game_ai/sensitiveConfig.py
