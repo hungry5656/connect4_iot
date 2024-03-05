@@ -1,0 +1,88 @@
+/*
+ * ui.h
+ *
+ *  Created on: Mar 2, 2024
+ *      Author: hungry5656
+ */
+
+// Default Parameter
+#define TXT_CHAR_SIZE       1
+#define TXT_CHAR_WIDTHS     6
+#define TXT_CHAR_HEIGHT     8
+#define DISPLAY_WIDTH       128
+#define STR_PLAYER_SELF     "YOU"
+#define STR_PLAYER_HUMAN    "HUMAN"
+#define STR_PLAYER_AI       "AI"
+
+// Common Color
+#define	BLACK           0x0000
+#define	BLUE            0x001F
+#define	GREEN           0x07E0
+#define CYAN            0x07FF
+#define	RED             0xF800
+#define MAGENTA         0xF81F
+#define YELLOW          0xFFE0
+#define WHITE           0xFFFF
+
+// Customized Color
+#define THEME_RED       0xE8E4
+#define THEME_YELLOW    0xFF80
+#define THEME_BLUE      0x001F
+#define ORANGE          0xEC26
+#define HELL_RED        0x88C6
+#define HUMAN_GREY      0x4A29
+#define AI_GREY         0xB596
+
+// Notification Message
+#define MAXIMUM_MSG_SIZE   21
+#define MAXIMUM_MSG        "111111111111111111111"
+#define MSG_CONNECTING     "CONNECTING..."          // Size: 13
+#define MSG_MAKE_MOVE      "MAKE YOUR MOVE"         // Size: 14
+#define MSG_WAIT           "WAIT YOUR OPPONENT"     // Size: 18
+#define MSG_INVALID        "INVALID MOVE!"          // Size: 13
+#define MSG_WIN            "======!YOU WIN!======"  // Size: 21
+#define MSG_LOSE           "======&YOU LOSE&====="  // Size: 21
+#define MSG_TIE            "======^TIE GAME^====="  // Size: 21
+
+// Cursor Param
+// takes 7 * 7 pixels
+#define CURSOR_UP       0
+#define CURSOR_DOWN     1
+#define CURSOR_LEFT     2
+#define CURSOR_RIGHT    3
+
+// Menu Param
+#define MENU_CHAR_SIZE          2
+#define STR_MENU_TITLE          "CONNECT"
+#define STR_MENU_SUBTITLE       "MADE BY"
+#define STR_MENU_AUTHOR         "SIZHUO & NATHAN"
+#define STR_MENU_TIPS_1         "PLEASE SELECT A MODE"
+#define STR_MENU_TIPS_2         "TO START THE GAME"
+#define MENU_CURSOR_LEFT_X      31
+#define MENU_CURSOR_RIGHT_X     95
+#define MENU_CURSOR_Y           97
+
+// Board Param
+#define HOLE_RADIUS             7
+#define BOARD_HOLE_X            12
+#define BOARD_HOLE_Y            33
+#define BOARD_CURSOR_X          63
+#define BOARD_CURSOR_Y          23
+#define PLAYER_CURSOR_X         6
+#define PLAYER_CURSOR_Y         3
+#define STR_PLAYER1             "P1"
+#define STR_PLAYER2             "P2"
+
+// Difficulty Page Param
+#define STR_LEVEL_TITLE_1       "SELECT LEVEL OF"
+#define STR_LEVEL_TITLE_2       "DIFFICULTY"
+#define STR_LEVEL_EASY          "EASY"
+#define STR_LEVEL_MEDIUM        "MEDIUM"
+#define STR_LEVEL_HARD          "HARD"
+#define STR_LEVEL_EXTREME       "EXTREME"
+#define STR_LEVEL_NIGHTMARE     "NIGHTMARE"
+#define LEVEL_CURSOR_X          34
+#define LEVEL_CURSOR_Y          42
+#define LEVELS_GAP              13 // pixel
+static unsigned char* levels[] = {STR_LEVEL_EASY, STR_LEVEL_MEDIUM, STR_LEVEL_HARD, STR_LEVEL_EXTREME, STR_LEVEL_NIGHTMARE};
+static unsigned int colors[] = {GREEN, YELLOW, ORANGE, THEME_RED, ORANGE};
