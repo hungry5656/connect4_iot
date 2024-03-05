@@ -1,8 +1,16 @@
 # ignore all pycache
 **/__pycache__
 
+# ignore vscode setting files
+.vscode
+
 # ignore ccs project files
-# TODO: after importing the ccs project
+connect4_board/Debug/
+connect4_board/targetConfigs
+.project
 
 # hide important config file
 game_ai/sensitiveConfig.py
+
+# ignore sesitive data File
+connect4_board/aws_credential.h
