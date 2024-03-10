@@ -1,5 +1,5 @@
 /*
- * ui.h
+ * ui_constant.h
  *
  *  Created on: Mar 2, 2024
  *      Author: hungry5656
@@ -13,6 +13,8 @@
 #define STR_PLAYER_SELF     "YOU"
 #define STR_PLAYER_HUMAN    "HUMAN"
 #define STR_PLAYER_AI       "AI"
+#define SPI_IF_BIT_RATE  800000
+#define TR_BUFF_SIZE     100
 
 // Common Color
 #define	BLACK           0x0000
@@ -84,5 +86,29 @@
 #define LEVEL_CURSOR_X          34
 #define LEVEL_CURSOR_Y          42
 #define LEVELS_GAP              13 // pixel
-static unsigned char* levels[] = {STR_LEVEL_EASY, STR_LEVEL_MEDIUM, STR_LEVEL_HARD, STR_LEVEL_EXTREME, STR_LEVEL_NIGHTMARE};
-static unsigned int colors[] = {GREEN, YELLOW, ORANGE, THEME_RED, ORANGE};
+
+// UI page id
+// #define PAGE_MENU               0
+// #define PAGE_BOARD              1
+// #define PAGE_DIFFICULTY         2
+
+#define MIN_IDX_MENU            0
+
+#define MAX_IDX_MENU            1
+#define MAX_IDX_BOARD           6
+#define MAX_IDX_DIFFICULTY      4
+
+// state id
+#define MENU_STATE              0
+#define GAME_STATE              1
+#define DIFFICULTY_STATE        2
+#define BACK_NUM                10
+
+#define HORIZONTAL_MODE         0
+#define VERTICAL_MODE           1
+
+
+extern unsigned int menuCursorX[];
+extern unsigned char* levels[];
+extern unsigned int colors[];
+extern unsigned int maxIdxArray[];

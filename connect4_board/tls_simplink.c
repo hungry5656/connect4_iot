@@ -815,3 +815,40 @@ int http_get(int iTLSSockID){
 
     return 0;
 }
+
+
+/* TODO: migrate that to tls_simplink files
+
+// #define DATA1 "{\"state\": {\r\n\"desired\" : {\r\n\"color\" : \"green\"\r\n}}}\r\n\r\n"
+// #define DATA1 "{\"state\": {\"desired\" : {\"color\" : \"green\"}}}"
+
+    // static long InitializeAppVariables();
+// static int tls_connect();
+// static int connectToAccessPoint();
+// static int http_post(int, char*);
+// static int http_get(int iTLSSockID);
+// char* jsonWrapMessage(char*);
+
+    long lRetVal = -1;
+    //Connect the CC3200 to the local access point
+    lRetVal = connectToAccessPoint();
+    //Set time so that encryption can be used
+    lRetVal = set_time();
+    if(lRetVal < 0) {
+        UART_PRINT("Unable to set time in the device");
+        LOOP_FOREVER();
+    }
+    //Connect to the website with TLS encryption
+    lRetVal = tls_connect();
+    if(lRetVal < 0) {
+        ERR_PRINT(lRetVal);
+    }
+
+
+    //http_post(lRetVal);
+
+
+    // close socket
+    sl_Close(lRetVal);
+    sl_Stop(SL_STOP_TIMEOUT);
+*/

@@ -33,8 +33,6 @@
 //
 //*****************************************************************************
 
-
-
 #include <stdio.h>
 
 // Simplelink includes
@@ -52,7 +50,6 @@
 #include "uart.h"
 #include "gpio.h"
 
-
 //Common interface includes
 #include "pin_mux_config.h"
 #include "gpio_if.h"
@@ -64,19 +61,9 @@
 #define URI_SIZE MAX_URI_SIZE + 1
 
 // external libraries
+#include "usr_input.h"
 #include "tv_code.h"
 #include "aws_credential.h"
-
-// previous part MACRO
-#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
-#define MAX_STRING_LENGTH    168
-#define SYSTICK_RELOAD_VAL   8000UL // set to 0.1ms
-#define CMD_NUM_BITS         32
-// end previous part MACRO
-
-// #define DATA1 "{\"state\": {\r\n\"desired\" : {\r\n\"color\" : \"green\"\r\n}}}\r\n\r\n"
-// #define DATA1 "{\"state\": {\"desired\" : {\"color\" : \"green\"}}}"
-
 
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- Start
@@ -95,26 +82,9 @@ extern void (* const g_pfnVectors[])(void);
 extern uVectorEntry __vector_table;
 #endif
 
-// From Lab 3
-volatile int systick_cnt = 0; // Systick counter
-volatile int systick_cnt_diff = -1; // Systick counter
-volatile int idx_cnt = 0;
-volatile char command_data[CMD_NUM_BITS + 1]; // command bits;
-
-// flag bits
-volatile int startDecodeFlag = 0; // set to 1 when a falling edge is detected
-volatile int verifiedStartFlag = 0; // set to 1 if first 9ms is verified
-volatile int verifiedStartFlag2 = 0; // set to 1 if seccond 4.5ms is verified
-volatile int signalLevel = 1; // represent the signal level at Pin64, 1 is high
-volatile int intFlag = 0; // set to one during interrupt handler
-volatile int finishFlag = 0; // if the parsing is finished, set the finish flag to 1
-volatile int errorFlag = 0;
-// End From Lab 3
-
 //*****************************************************************************
 //                 GLOBAL VARIABLES -- End: df
 //*****************************************************************************
-
 
 //****************************************************************************
 //                      LOCAL FUNCTION PROTOTYPES
@@ -122,13 +92,6 @@ volatile int errorFlag = 0;
 // static long WlanConnect();
 // static int set_time();
 static void BoardInit(void);
-// static long InitializeAppVariables();
-// static int tls_connect();
-// static int connectToAccessPoint();
-// static int http_post(int, char*);
-// static int http_get(int iTLSSockID);
-// char* jsonWrapMessage(char*);
-
 
 //*****************************************************************************
 //
@@ -161,101 +124,6 @@ static void BoardInit(void) {
     PRCMCC3200MCUInit();
 }
 
-// From Lab 3
-static void ResetFlag(void) {
-    // signalLevel = 1;
-    startDecodeFlag = 0;
-    verifiedStartFlag = 0;
-    verifiedStartFlag2 = 0;
-}
-static inline void SysTickReset(void) {
-    // any write to the ST_CURRENT register clears it
-    // after clearing it automatically gets reset without
-    // triggering exception logic
-    // see reference manual section 3.2.1
-    HWREG(NVIC_ST_CURRENT) = 1;
-
-    // clear the global count variable
-    systick_cnt = 0;
-}
-static void GPIOA1IntHandler(void) {
-    //Report("\n\rGPIO Interrupt");
-    unsigned long ulStatus;
-
-    ulStatus = MAP_GPIOIntStatus (GPIOA1_BASE, true);
-    intFlag = 1;
-
-    if (finishFlag == 1){
-        // nop
-    } else if (signalLevel == 1) {
-        // falling edge
-        signalLevel = 0;
-        if (startDecodeFlag == 0) {
-            // start of decode process
-            startDecodeFlag = 1;
-            systick_cnt_diff = systick_cnt;
-            SysTickReset();
-
-        } else {
-            if (verifiedStartFlag == 1 && systick_cnt > 40 && systick_cnt < 50) {
-                verifiedStartFlag2 = 1;
-                SysTickReset();
-
-            } else if (verifiedStartFlag2 == 1) {
-                if (systick_cnt >= 6 && systick_cnt <= 15){
-                    command_data[idx_cnt] = 48; // character 0
-                    idx_cnt++;
-                } else if (systick_cnt >= 18 && systick_cnt < 27) {
-                    command_data[idx_cnt] = 49; // character 1
-                    idx_cnt++;
-                } else {
-                    // Error: not recognized bit
-                    errorFlag = 1;
-                    ResetFlag();
-                }
-                SysTickReset();
-            } else {
-                // the signal does not match
-                ResetFlag();
-            }
-        }
-
-    } else {
-        //rising edge
-        signalLevel = 1;
-        if (startDecodeFlag == 1) {
-            if (systick_cnt > 85 && systick_cnt < 95) {
-                verifiedStartFlag = 1;
-                SysTickReset();
-            } else if (verifiedStartFlag2 == 1) {
-//                if (systick_cnt > 30) {
-//                    ResetFlag();
-//                }
-                // ignore
-            } else {
-                // not a normal signal
-                ResetFlag();
-            }
-        }
-//        ResetFlag();
-        if (idx_cnt == 32) {
-            // the parse is finished, reset the flag and everything
-            idx_cnt = 0;
-            ResetFlag();
-            finishFlag = 1;
-        }
-    }
-
-    MAP_GPIOIntClear(GPIOA1_BASE, ulStatus);        // clear interrupts on GPIOA1
-    intFlag = 0;
-}
-
-static void systick_int_handler(void) {
-    systick_cnt++;
-}
-// End From Lab 3
-
-
 //*****************************************************************************
 //
 //! Main 
@@ -266,130 +134,55 @@ static void systick_int_handler(void) {
 //!
 //*****************************************************************************
 void main() {
-    // From Lab 3
-    char result_str[MAX_STRING_LENGTH+1];
-    char messageToSend[MAX_STRING_LENGTH+1];
-    int msg_idx = 0;
-    unsigned long ulStatus;
-    // End From Lab 3
+    unsigned int currState = MENU_STATE;
+    unsigned int isAI = 0;
+    unsigned int levelIdx = 0;
 
-    long lRetVal = -1;
-    //
-    // Initialize board configuration
-    //
     BoardInit();
-
     PinMuxConfig();
-
-    // From Lab 3
     PRCMPeripheralClkEnable(PRCM_GSPI,PRCM_RUN_MODE_CLK);
-    //
-
     InitTerm();
     ClearTerm();
+    MAP_PRCMPeripheralReset(PRCM_GSPI);
     UART_PRINT("My terminal works!\n\r");
+    // configure system interrupt: systick and GPIO
+    uiInit();
+    setupInterrupt();
 
-    // From Lab 3
-    // interrupt config
-    GPIOIntRegister(GPIOA1_BASE, GPIOA1IntHandler); // register handler
-    GPIOIntTypeSet(GPIOA1_BASE, 0x2, GPIO_BOTH_EDGES);    // GPIO 64 both edge
-
-    ulStatus = MAP_GPIOIntStatus (GPIOA1_BASE, false);
-    GPIOIntClear(GPIOA1_BASE, ulStatus); // clear interrupts on GPIOA1
-    GPIOIntEnable(GPIOA1_BASE, 0x2); // enable interrupt
-
-    // systick config
-    SysTickPeriodSet(SYSTICK_RELOAD_VAL);
-    SysTickIntRegister(systick_int_handler);
-    SysTickEnable();
-    SysTickIntEnable();
-    int cmd_cnt = 0;
-
-    int lastCharIdx = -1, currentCharIdx = 0;
-    // End From Lab 3
-
-    //Connect the CC3200 to the local access point
-    lRetVal = connectToAccessPoint();
-    //Set time so that encryption can be used
-    lRetVal = set_time();
-    if(lRetVal < 0) {
-        UART_PRINT("Unable to set time in the device");
-        LOOP_FOREVER();
-    }
-
-    //Connect to the website with TLS encryption
-    lRetVal = tls_connect();
-    if(lRetVal < 0) {
-        ERR_PRINT(lRetVal);
-    }
-    //http_post(lRetVal);
-
-
-    // From Lab 3
-    while(1)
-    {
-        // if (errorFlag == 1) {
-        //     Report("\n\rAn Error Occurred!");
-        //     errorFlag = 0;
-        // }
-
-        if (finishFlag == 1) {
-            MAP_UtilsDelay(4000000);
-            cmd_cnt++;
-            command_data[32] = '\0';
-            whichButton(command_data, result_str);
-            Report("\n\rcmd %d binary: %s; It is %s", cmd_cnt, command_data, result_str);
-            int prevCharIdx = currentCharIdx;
-            int prevLastCharIdx = lastCharIdx;
-            char thisChar = getNextChar(command_data, &lastCharIdx, &currentCharIdx, systick_cnt_diff);
-
-            if (thisChar == ENTER_CHAR) {
-                // enter char
-                messageToSend[msg_idx] = '\0';
-
-                msg_idx = 0; // reset the msg_idx to 0;
-
-                // send to uart
-                //cleanTextOnSend();
-                //transmitTextMessage(messageToSend);
-
-                // send to IoT
-                UART_PRINT("\n\r MESSAGE:\n\r");
-                UART_PRINT(messageToSend);
-                char jsonContent[200];
-                sprintf(jsonContent, "{\"state\": {\"desired\" : {\"message\" : \"%s\"}}}", messageToSend);
-
-                UART_PRINT("\n\r JSON CONTENT: \n\r");
-                UART_PRINT(jsonContent);
-
-                http_post(lRetVal, jsonContent);
-                //break
-
-            } else if (thisChar == DELETE_CHAR) {
-                // delete char
-                //deleteChar();
-                msg_idx = MIN(0, msg_idx - 1);
-
-            } else if (thisChar == INVALID_CHAR) {
-                // nop
+    // main ui logic loop
+    while(1) {
+        if (currState == MENU_STATE) {
+            drawMenu();
+            unsigned int nextIdx = getUsrInput(MENU_STATE);
+            if (nextIdx == 0) {
+                currState = GAME_STATE;
+                isAI = 0;
             } else {
-                if (prevLastCharIdx == lastCharIdx && prevCharIdx != currentCharIdx) {
-                    //deleteChar();
-                    msg_idx = MIN(0, msg_idx - 1);
-                }
-                messageToSend[msg_idx] = thisChar;
-                msg_idx++;
-                //writeChar(thisChar);
+                currState = DIFFICULTY_STATE;
             }
-            ResetFlag();
-            finishFlag = 0;
+            eraseMenu();
+        } else if (currState == GAME_STATE) {
+            drawBoard();
+            // unsigned int nextIdx;
+            // TODO: play games
+            // Param: isAI, levelIdx
+            unsigned int nextIdx = getUsrInput(GAME_STATE);
+            currState = MENU_STATE;
+            eraseBoard();
+        } else {
+            drawLevelPage();
+            unsigned int nextIdx = getUsrInput(DIFFICULTY_STATE);
+            if (levelIdx == BACK_NUM) {
+                currState = MENU_STATE;
+            } else {
+                levelIdx = nextIdx;
+                currState = GAME_STATE;
+                isAI = 1;
+            }
+            eraseLevelPage();
         }
     }
-    // End From Lab 3
-
-    sl_Close(lRetVal);
-    sl_Stop(SL_STOP_TIMEOUT);
-    //LOOP_FOREVER();
+    uiClose();
 }
 //*****************************************************************************
 //

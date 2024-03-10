@@ -8,6 +8,26 @@
 #include "ui.h"
 #include "ui_constant.h"
 
+void uiInit() {
+    // memcpy(g_ucTxBuff,MASTER_MSG,sizeof(MASTER_MSG));
+    SPIReset(GSPI_BASE);
+    MAP_SPIConfigSetExpClk(GSPI_BASE,MAP_PRCMPeripheralClockGet(PRCM_GSPI),
+                    SPI_IF_BIT_RATE,SPI_MODE_MASTER,SPI_SUB_MODE_0,
+                    (SPI_SW_CTRL_CS |
+                    SPI_4PIN_MODE |
+                    SPI_TURBO_OFF |
+                    SPI_CS_ACTIVEHIGH |
+                    SPI_WL_8));
+    MAP_SPIEnable(GSPI_BASE);
+    MAP_SPICSEnable(GSPI_BASE);
+    Adafruit_Init();
+    fillScreen(BLACK);
+}
+
+void uiClose() {
+    MAP_SPICSDisable(GSPI_BASE);
+}
+
 void drawString(unsigned int x,
                 unsigned int y,
                 unsigned char texts[],
@@ -130,6 +150,31 @@ void eraseCursor(unsigned int x, unsigned int y, unsigned int direction) {
     drawCursor(x, y, direction, BLACK);
 }
 
+void updateCursor(unsigned int stateId, unsigned int oldIdx, unsigned int newIdx) {
+    unsigned int x, y, direction, old_x, old_y;
+    if (stateId == MENU_STATE) {
+        direction = CURSOR_UP;
+        old_y = MENU_CURSOR_Y;
+        y = MENU_CURSOR_Y;
+        old_x = menuCursorX[oldIdx];
+        x = menuCursorX[newIdx];
+    } else if (stateId == GAME_STATE) {
+        direction = CURSOR_DOWN;
+        old_y = BOARD_CURSOR_Y;
+        y = BOARD_CURSOR_Y;
+        old_x = BOARD_HOLE_X + oldIdx * 17;
+        x = BOARD_HOLE_X  + newIdx * 17;
+    } else {
+        direction = CURSOR_RIGHT;
+        old_y = LEVEL_CURSOR_Y + oldIdx * 13;
+        y = LEVEL_CURSOR_Y + newIdx * 13;
+        old_x = LEVEL_CURSOR_X;
+        x = LEVEL_CURSOR_X;
+    }
+    eraseCursor(old_x, old_y, direction);
+    drawCursor(x, y, direction, WHITE);
+}
+
 void drawMenu() {
     drawString(16, 0, STR_MENU_TITLE, 7, MENU_CHAR_SIZE, THEME_RED);
     drawString(100, 0, "4", 1, MENU_CHAR_SIZE, THEME_YELLOW);
@@ -140,7 +185,6 @@ void drawMenu() {
     drawString(4, 108, STR_MENU_TIPS_1, 20, TXT_CHAR_SIZE, MAGENTA); // orig:86
     drawString(13, 116, STR_MENU_TIPS_2, 17, TXT_CHAR_SIZE, MAGENTA); // orig:94
     drawCursor(MENU_CURSOR_LEFT_X, MENU_CURSOR_Y, CURSOR_UP, WHITE); // left coordinate (31, 97), right coordinate (95, 97)
-    drawCursor(MENU_CURSOR_RIGHT_X, MENU_CURSOR_Y, CURSOR_UP, WHITE);
 }
 
 void eraseMenu() {

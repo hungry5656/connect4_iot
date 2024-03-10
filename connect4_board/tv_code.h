@@ -18,11 +18,21 @@
 #define BUTTON_EIGHT_CODE   "00100000110111110001100011100111"
 #define BUTTON_NINE_CODE    "00100000110111111001100001100111"
 #define BUTTON_ZERO_CODE    "00100000110111110000100011110111"
-#define BUTTON_LAST_CODE    "00100000110111110101100010100111"
 #define BUTTON_MUTE_CODE    "00100000110111110101000010101111"
 
-#define ENTER_CHAR          '#'
-#define DELETE_CHAR         '!'
+#define BUTTON_LAST_CODE    "00100000110111110101100010100111"
+#define BUTTON_UP_CODE      "00100000110111110100100010110111" // temp 2
+#define BUTTON_DOWN_CODE    "00100000110111110001100011100111" // temp 8
+#define BUTTON_LEFT_CODE    "00100000110111110010100011010111" // temp 4
+#define BUTTON_RIGHT_CODE   "00100000110111110110100010010111" // temp 6
+#define BUTTON_OK_CODE      "00100000110111111010100001010111" // temp 5
+
+#define UP_CHAR             'u'
+#define DOWN_CHAR           'd'
+#define LEFT_CHAR           'l'
+#define RIGHT_CHAR          'r'
+#define OK_CHAR             'o'
+#define BACK_CHAR           'b'
 #define INVALID_CHAR        '*'
 
 #define MULTITAP_TIMEOUT    8000 // 500ms
@@ -48,10 +58,6 @@
 #include "uart_if.h"
 #include "i2c_if.h"
 
-void whichButton(volatile char* parsedCode, volatile char* result_str);
-
-int getButtonIdx(char* parsedCode);
-
-char getNextChar(volatile char* parsedCode, int* lastCharIdx, int* currentCharIdx, int idx_cnt);
+char getButtonChar(char* parsedCode, char* result_str);
 
 #endif /* TV_CODE_H_ */

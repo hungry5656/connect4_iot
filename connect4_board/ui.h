@@ -8,15 +8,40 @@
 #ifndef UI_H_
 #define UI_H_
 
+#include "hw_types.h"
+#include "hw_ints.h"
+#include "hw_nvic.h"
+#include "spi.h"
+#include "rom.h"
+#include "rom_map.h"
+#include "interrupt.h"
+#include "prcm.h"
+#include "utils.h"
+#include "uart.h"
+#include "gpio.h"
+
+//Common interface includes
+#include "pin_mux_config.h"
+#include "gpio_if.h"
+#include "common.h"
+#include "uart_if.h"
+
+// external libraries
+#include "usr_input.h"
+#include "tv_code.h"
+#include "aws_credential.h"
+
 #include "Adafruit_GFX.h"
 #include "Adafruit_SSD1351.h"
 #include "glcdfont.h"
 #include "string.h"
-#include "hw_types.h"
 
+void uiInit();
+void uiClose();
 void drawString(unsigned int x, unsigned int y, unsigned char texts[], size_t strSize, unsigned int fontSize, unsigned int color);
 void drawCursor(unsigned int x, unsigned int y, unsigned int direction, unsigned int color);
 void eraseCursor(unsigned int x, unsigned int y, unsigned int direction);
+void updateCursor(unsigned int stateId, unsigned int oldIdx, unsigned int newIdx);
 void drawMenu();
 void eraseMenu();
 void drawMessage(unsigned char message[], unsigned int color);
