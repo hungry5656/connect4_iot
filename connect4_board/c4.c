@@ -92,7 +92,8 @@ static void init_c4t() {
     // Initialize game state
     GAME.winner = &NO_PLAYER;
     GAME.status = GAME_INACTIVE;
-    GAME.status = GAME_INACTIVE;
+
+    // Set game initialization flag
     GAME_INIT = true;
 }
 
@@ -126,9 +127,8 @@ static bool do_move(player_t* player, uint8_t selected_column) {
     return false;
 }
 
-static void turn_transition() {
-    GAME.player_turn = GAME.player_turn->opponent;
-}
+static void turn_transition() { GAME.player_turn = GAME.player_turn->opponent; }
+static bool check_board_full() { return (GAME.num_moves >= MAX_MOVES); }
 
 static uint8_t play_turn() {
     uint8_t selected_column; // TODO: poll for input
@@ -145,8 +145,6 @@ static uint8_t play_turn() {
     do_move(GAME.player_turn, selected_column);
     return selected_column;
 }
-
-bool check_board_full() { return (GAME.num_moves >= MAX_MOVES); }
 
 // PUBLIC METHODS
 connect4_t get_game_c4(){
