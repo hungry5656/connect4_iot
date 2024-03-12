@@ -70,7 +70,7 @@ static void fmt_err_c4();
 /*
  * Initialize a C4_GAME_OBJ
  */
-static bool init_c4t();
+static bool init_c4t(uint8_t player1_id, uint8_t player2_id, bool player1_is_local);
 
 /*
  * Modify game state for a move
