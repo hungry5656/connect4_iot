@@ -28,6 +28,11 @@
 // Board state
 #define CELL_EMPTY      0
 
+// Player state
+#define NO_PLAYER_ID    0
+#define TIE_PLAYER_ID   255
+#define AI_PLAYER_ID    36
+
 // Null pointer
 #define NULL 0
 // Max error string length
@@ -65,7 +70,7 @@ static void fmt_err_c4();
 /*
  * Initialize a C4_GAME_OBJ
  */
-static void init_c4t();
+static bool init_c4t();
 
 /*
  * Modify game state for a move
@@ -78,9 +83,14 @@ static bool do_move(player_t* player, uint8_t selected_column);
 static void turn_transition();
 
 /*
- * Play a turn
+ * Play a turn - run when it is the local player's turn
  */
 static uint8_t play_turn();
+
+/*
+ * Wait a turn - run when it is the non-local player's turn
+ */
+static uint8_t wait_turn();
 
 // PUBLIC MEMBERS
 
@@ -88,12 +98,6 @@ static uint8_t play_turn();
  * Obtain Connect 4 singleton. Initialize if unavailable.
  */
 connect4_t  get_game_c4();
-
-/*
- * Player accessors
- */
-player_t    get_player1();
-player_t    get_player2();
 
 /*
  * Check if a game is initialized.
@@ -110,6 +114,12 @@ bool        game_active_c4();
  * Start a game of Connect 4
  */
 bool        start_game_c4();
+
+/*
+ * Reset the Connect 4 game
+ * Requires that game state be GAME_INACTIVE or GAME_OVER
+ */
+bool        reset_game_c4();
 
 /*
  * Check the end-conditions for the game.

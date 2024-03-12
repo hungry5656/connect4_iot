@@ -27,6 +27,7 @@ struct C4_GAME_OBJ {
     // PLAYER STATE
     player_t    player1;
     player_t    player2;
+    player_t*   local_player;
     player_t*   player_turn;
 
 }; // connect4_t
@@ -36,7 +37,6 @@ static connect4_t GAME;
 static bool GAME_INIT = false;
 static const int  MAX_MOVES = BOARD_WIDTH * BOARD_HEIGHT;
 
-static uint8_t last_player_id = 0;
 static player_t TIE_PLAYER;
 static player_t NO_PLAYER;
 
@@ -57,23 +57,50 @@ static void fmt_err_c4(const char* err_msg) {
     Report(fmt_err_msg);
 }
 
-static void init_player(player_t* player, player_t* opponent) {
+static void init_player(player_t* player, player_t* opponent, uint8_t player_id) {
+    // TODO: consider local player vs. nonlocal player
     player->opponent = opponent;
-    last_player_id++;
-    player->id = last_player_id;
+    player->id = player_id;
 }
 
-static void init_c4t() {
+static bool init_c4t(uint8_t player1_id, uint8_t player2_id, bool player1_is_local) {
+    // Input validation
+    switch(player1_id) {
+    case(NO_PLAYER.id):
+    case(TIE_PLAYER.id):
+    case(AI_PLAYER_ID):
+        fmt_err_msg("Cannot init: Invalid player1_id. Did you use a reserved player id?");
+        return true;
+    }
+
+    switch(player2_id) {
+    case(NO_PLAYER.id):
+    case(TIE_PLAYER.id):
+    case(AI_PLAYER_ID):
+        fmt_err_msg("Cannot init: Invalid player2_id. Did you use a reserved player id?");
+        return true;
+    }
+
     // Initialize player state
+    if (GAME_INIT) {
+        fmt_err_msg("Cannot init: connect4 game object is already initialized.");
+        return 0;
+    }
 
     // Dummy players for special player states
-    NO_PLAYER.id = 0;           // For when player is "null"
+    NO_PLAYER.id = NO_PLAYER_ID;           // For when player is "null"
     NO_PLAYER.opponent = NULL;
-    TIE_PLAYER.id = 255;        // For when the game is a tie
+    TIE_PLAYER.id = TIE_PLAYER_ID;        // For when the game is a tie
     TIE_PLAYER.opponent = NULL;
 
-    init_player(&GAME.player1, &GAME.player2);
-    init_player(&GAME.player2, &GAME.player1);
+    init_player(&GAME.player1, &GAME.player2, player1_id);
+    init_player(&GAME.player2, &GAME.player1, player2_id);
+
+    if (player1_is_local) {
+        GAME.local_player = &GAME.player1;
+    } else {
+        GAME.local_player = &GAME.player2;
+    }
 
     GAME.player_turn = &NO_PLAYER;
 
@@ -95,6 +122,8 @@ static void init_c4t() {
 
     // Set game initialization flag
     GAME_INIT = true;
+
+    return 0;
 }
 
 static bool set_winner(bool is_tie){
@@ -136,7 +165,7 @@ static uint8_t play_turn() {
     bool valid_move = false;
 
     while (!valid_move) {
-        selected_column = 2; // DUMMY VALUE until above TODO satisfied
+        selected_column = 2; // DUMMY VALUE until above is satisfied
 
         // use unsigned negative overflow to detect when the column is full
         valid_move = !(GAME.lowest_empty_col_slot[selected_column] > BOARD_HEIGHT - 1);
@@ -146,9 +175,13 @@ static uint8_t play_turn() {
     return selected_column;
 }
 
+static uint8_t wait_turn() {
+    // Poll AWS for state update
+}
+
 // PUBLIC METHODS
 connect4_t get_game_c4(){
-    if (!GAME_INIT) { init_c4t(); }
+   if (!GAME_INIT) { init_c4t(); }
    return GAME;
 }
 
@@ -174,16 +207,18 @@ bool start_game_c4() {
     bool is_tie = false;
 
     while (!game_over) {
-        if (!first_turn) {
-            turn_transition();
+        if (!first_turn) { turn_transition(); }
+
+        if (GAME.player_turn == GAME.local_player) {
+            uint8_t last_move = play_turn();
+            first_turn = false;
+
+            int game_over_status = check_game_over_c4(last_move, GAME.player_turn);
+            game_over = game_over_status > 0;
+            is_tie = game_over_status > 1;
+        } else {
+            wait_turn();
         }
-
-        uint8_t last_move = play_turn();
-        first_turn = false;
-
-        int game_over_status = check_game_over_c4(last_move, GAME.player_turn);
-        game_over = game_over_status > 0;
-        is_tie = game_over_status > 1;
     }
 
     if (game_over) {
@@ -192,6 +227,16 @@ bool start_game_c4() {
     }
 
     return false;
+}
+
+bool reset_game_c4() {
+    if (!GAME_INIT) { fmt_err_msg("Cannot reset game: game is not initialized, please call init_game_c4() instead."); return true; }
+    if (GAME.status == GAME_ACTIVE) { fmt_err_msg("Cannot reset game: game is currently active."); return true; };
+
+    GAME_INIT = false;
+    init_game_c4();
+
+    return true;
 }
 
 uint8_t check_game_over_c4(uint8_t move_col, player_t* last_move_player) {
