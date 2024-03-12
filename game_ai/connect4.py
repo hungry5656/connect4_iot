@@ -10,8 +10,10 @@ from thread import KillableThread, thread_with_exception, thread_with_trace
 import multiprocessing
 import signal
 from copy import deepcopy
-
+from players import humanIoT
 import threading
+import awsGateway
+from message import messageUtil
 
 
 def time_limit(func, args, time_):
@@ -96,6 +98,10 @@ class connect4():
 		playerID = self.turnPlayer.position
 		self.history[playerID-1].append(move)
 		self.turnPlayer = self.turnPlayer.opponent
+		# send move to opponent if opponent is humanIoT
+		if isinstance(self.turnPlayer, humanIoT):
+			newMsg = messageUtil.buildToShadowMsg("move", self.turnPlayer.position - 1, move)
+			awsGateway.instance.sendMsgToIoT(self.turnPlayer.playerName, newMsg)
 		if self.visualize:
 			self.draw_board()
 		if self.verbose:

@@ -1,45 +1,47 @@
 import boto3
+import time
+import sensitiveConfig
+import json
 
 # Parameters
-QUEUE_MSG_WAIT_TIME = 20 # how many seconds to wait before the next message
+QUEUE_MSG_WAIT_TIME = 60 # how many seconds to wait before the next message
 
 class awsGateway():
-    def __init__(self):
-        # TODO: open aws_data_file, a sensitive private file that should be hide using .gitignore
-        # e.g. QueueUrl
 
+    def __init__(self):
         # connect to a sqs queue
         self.sqs = boto3.client('sqs')
-        self.queueUrl = self.sqs.create_queue(QueueName='my-queue')['QueueUrl']
-        self.playerClient = [None] * 2
+        self.queueUrl = sensitiveConfig.QUEUE_URL
+        self.playerClient = boto3.client('iot-data')
 
 
     def receiveMsgFromSQS(self):
-        message = self.sqs.receive_message(QueueUrl=self.queueUrl, WaitTimeSeconds=QUEUE_MSG_WAIT_TIME)
+        response = self.sqs.receive_message(QueueUrl=self.queueUrl, WaitTimeSeconds=QUEUE_MSG_WAIT_TIME)
 
         # If a message is received, print it
-        if message['Messages']:
-            print(message['Messages'][0]['Body'])
-            return message, 0
-
-        # Otherwise, wait for a message to arrive
-        else:
+        try:
+            if response['Messages']:
+                message = response['Messages'][0]
+                messageBody = message['Body']
+                receiptHandle = message['ReceiptHandle']
+                self.sqs.delete_message(
+                    QueueUrl=self.queueUrl,
+                    ReceiptHandle=receiptHandle
+                )
+                return messageBody, 0
+        except:
             print('No messages received')
-            return "", -1
+            return "ERROR", -1
 
-    def sendMsgToIoT(self):
-        # TODO: need to do research on how to send message from aws iot shadow to CC3200 using MQTT
-        #       Possibly using AWS IoT SDK for embedded C
-        print("sendMsgToIoT")
-        return 0
+    def sendMsgToIoT(self, name, message):
+        response = self.playerClient.update_thing_shadow(
+            thingName=name,
+            payload=json.dumps(message)
+        )
+        # receiveMsg to purge the SQS queue
+        msgBody, idx = self.receiveMsgFromSQS()
 
-    def linkPlayer(self, shadowName, position):
-        if (self.playerClient[position] != None):
-            print("ERROR: the player is already assigned")
-            return -1
-        self.playerClient[position] = boto3.client('iot-data')
-        
-        # TODO: map shadow_name to iot_data client
+        return idx
 
-        return 0
 
+instance = awsGateway()

@@ -8,6 +8,8 @@ import connect4
 import numpy as np
 import sys
 from copy import deepcopy
+import gameConstant
+from message import messageUtil
 
 
 class connect4Player(object):
@@ -59,17 +61,20 @@ class human2(connect4Player):
 class humanIoT(connect4Player):
 
 	def play(self, env, move):
-		# TODO: the move should be query from iot 
 		move = []
 		while True:
 			message, errorCode = awsGateway.receiveMsgFromSQS()
-			if errorCode != 0 and message["messageType"] == "move" and message["shadowName"] == self.playerName:
-				move[:] = [int(message["message"])]
+			if errorCode == 0:
+				parseCode, parseIdx = messageUtil.parseMoveMsg(message, self.playerName)
+				if parseCode == -1:
+					continue
+				move[:] = [int(parseIdx)]
 			else:
 				continue
-			if int(move[0]) >= 0 and int(move[0]) <= 6 and env.topPosition[int(move[0])] >= 0:
+			if int(move[0]) == gameConstant.QUIT_GAME or int(move[0]) >= 0 and int(move[0]) <= 6 and env.topPosition[int(move[0])] >= 0:
+				# send valid move to opponent
 				break
-			# TODO: if the input is invalid, send the message back to this shadow, probably not gonna happen
+				# TODO: if the input is invalid, send the message back to this shadow, probably not gonna happen
 
 
 class randomAI(connect4Player):
