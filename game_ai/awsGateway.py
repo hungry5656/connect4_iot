@@ -4,7 +4,7 @@ import sensitiveConfig
 import json
 
 # Parameters
-QUEUE_MSG_WAIT_TIME = 60 # how many seconds to wait before the next message
+QUEUE_MSG_WAIT_TIME = 20 # how many seconds to wait before the next message
 
 class awsGateway():
 
@@ -34,6 +34,7 @@ class awsGateway():
             return "ERROR", -1
 
     def sendMsgToIoT(self, name, message):
+        print("DEBUG: sending msg to {name} with message: {message}")
         response = self.playerClient.update_thing_shadow(
             thingName=name,
             payload=json.dumps(message)
@@ -45,3 +46,4 @@ class awsGateway():
 
 
 instance = awsGateway()
+

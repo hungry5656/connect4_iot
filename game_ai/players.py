@@ -1,7 +1,7 @@
 from itertools import count
 import random
 import time
-from awsGateway import awsGateway
+import awsGateway
 import pygame
 import math
 import connect4
@@ -61,20 +61,21 @@ class human2(connect4Player):
 class humanIoT(connect4Player):
 
 	def play(self, env, move):
-		move = []
 		while True:
-			message, errorCode = awsGateway.receiveMsgFromSQS()
+			message, errorCode = awsGateway.instance.receiveMsgFromSQS()
 			if errorCode == 0:
 				parseCode, parseIdx = messageUtil.parseMoveMsg(message, self.playerName)
 				if parseCode == -1:
 					continue
+				print(parseIdx)
 				move[:] = [int(parseIdx)]
 			else:
 				continue
 			if int(move[0]) == gameConstant.QUIT_GAME or int(move[0]) >= 0 and int(move[0]) <= 6 and env.topPosition[int(move[0])] >= 0:
 				# send valid move to opponent
 				break
-				# TODO: if the input is invalid, send the message back to this shadow, probably not gonna happen
+			
+			# TODO: if the input is invalid, send the message back to this shadow, probably not gonna happen
 
 
 class randomAI(connect4Player):
@@ -446,3 +447,4 @@ size = (width, height)
 RADIUS = int(SQUARESIZE/2 - 5)
 
 screen = pygame.display.set_mode(size)
+

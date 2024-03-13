@@ -53,57 +53,63 @@ agents_iot = {
 		4: alphaBetaAI
 }
 
-def initGameConnection(isMultiplayer, player1, player2):
-	# seed = 0 # TODO: need to randomly generate seed
-	
-	# check if the message is initialize game
-	response, errorCode = awsGateway.instance.receiveMsgFromSQS()
-	if errorCode != 0:
-		return -1
-	message, parseCode = messageUtil.parseCMDMsg(message)
-	if parseCode != 0:
-		return -1
-	elif message["messageType"] != "cmd":
-		print("ERROR: This is a move msg, which appeared in the wrong place")
-		return -1
-	elif message["message"] == "START_GAME":
-		isMultiplayer = True
-		player1 = humanIoT(1, seed, message["shadowName"])
-	elif message["message"] in agents_iot: # if the message is one of the five difficulty level
-		player2 = agents_iot[message["message"]](2, seed, "AI")
-	else:
-		print("wrong command, please retry")
-		return -1
-
-	if isMultiplayer: # if this is multiplayer, wait for the next player to connect
-		message2, errorCode2 = awsGateway.instance.receiveMsgFromSQS()
-		if errorCode2 != 0:
-			return -1
-		elif message2["shadowName"] != message["shadowName"]:
-			print("ERROR: Same connection twice")
-			return -1
-		elif message2["message"] == "START_GAME":
-			player2 = humanIoT(2, seed, message["shadowName"])
-		else:
-			print("ERROR: not a start command")
-			return -1
-	
-	# send the confirmation message
-	newMsg1 = messageUtil.buildToShadowMsg("cmd", 0, gameConstant.SET_PLAYER0)
-	awsGateway.instance.sendMsgToIoT(player1.playerName, newMsg1)
-	if isMultiplayer:
-		newMsg2 = messageUtil.buildToShadowMsg("cmd", 1, gameConstant.SET_PLAYER1)
-		awsGateway.instance.sendMsgToIoT(player2.playerName, newMsg2)
+def initGameConnection():
 	return 0
 
 if __name__ == '__main__':
 	while(True):
 		isMultiplayer = False
-		player1 = None
-		player2 = None
-		if initGameConnection(isMultiplayer, player1, player2) == -1:
+		# seed = 0 # TODO: need to randomly generate seed
+		
+		# check if the message is initialize game
+		response, errorCode = awsGateway.instance.receiveMsgFromSQS()
+		print(response)
+		if errorCode != 0:
+			print("ERROR: receive failed")
+			continue
+		parseCode, message = messageUtil.parseCMDMsg(response)
+		if parseCode != 0:
+			print("ERROR: parse failed")
+			continue
+		elif message["message"] == gameConstant.START_GAME:
+			isMultiplayer = True
+			player1 = humanIoT(1, seed, message["shadowName"])
+			print("INFO: set player 1, wait for two")
+		elif message["message"] in agents_iot: # if the message is one of the five difficulty level
+			isMultiplayer = False
+			player1 = humanIoT(1, seed, message["shadowName"])
+			player2 = agents_iot[message["message"]](2, seed, "AI")
+			print("INFO: set player 1 and AI")
+		else:
+			print("wrong command, please retry")
 			continue
 
+		if isMultiplayer: # if this is multiplayer, wait for the next player to connect
+			response2, errorCode2 = awsGateway.instance.receiveMsgFromSQS()
+			if errorCode2 != 0:
+				print("ERROR: receive failed")
+				continue
+			parseCode2, message2 = messageUtil.parseCMDMsg(response2)
+			if parseCode2 != 0:
+				print("ERROR: parse failed")
+				continue
+			elif message2["shadowName"] != message["shadowName"]:
+				print("ERROR: Same connection twice")
+				continue
+			elif message2["message"] == gameConstant.START_GAME:
+				player2 = humanIoT(2, seed, message["shadowName"])
+			else:
+				print("ERROR: not a start command")
+				continue
+		# send the confirmation message
+		newMsg1 = messageUtil.buildToShadowMsg("cmd", 0, gameConstant.SET_PLAYER0)
+		awsGateway.instance.sendMsgToIoT(player1.playerName, newMsg1)
+		if isMultiplayer:
+			newMsg2 = messageUtil.buildToShadowMsg("cmd", 1, gameConstant.SET_PLAYER1)
+			awsGateway.instance.sendMsgToIoT(player2.playerName, newMsg2)
+		print(type(player1))
+		print(type(player2))
 		c4 = connect4(player1, player2, board_shape=(w, l), visualize=visualize,
 					limit_players=limit_players, time_limit=time_limit, verbose=verbose)
 		c4.play()
+

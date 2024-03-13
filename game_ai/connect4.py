@@ -10,7 +10,7 @@ from thread import KillableThread, thread_with_exception, thread_with_trace
 import multiprocessing
 import signal
 from copy import deepcopy
-from players import humanIoT
+import players
 import threading
 import awsGateway
 from message import messageUtil
@@ -77,13 +77,18 @@ class connect4():
 			self.time_limits[1] = 0.5
 
 	def playTurn(self):
+		print("DEBUG: turn is called")
 		move = self.randMove()
+		print("RANDMOVE:")
+		print(move)
 		if self.turnPlayer.position in self.limit:
 			time_limit(self.turnPlayer.play, (self, move,),
 			           self.time_limits[self.turnPlayer.position-1])
 		else:
+			print("NOLIMIT")
 			self.turnPlayer.play(self, move)
 		# Move returned as list because lists are mutable
+		print(move)
 		move = move[0]
 		# Correct illegal move (assign random)
 		if self.topPosition[move] < 0:
@@ -99,8 +104,9 @@ class connect4():
 		self.history[playerID-1].append(move)
 		self.turnPlayer = self.turnPlayer.opponent
 		# send move to opponent if opponent is humanIoT
-		if isinstance(self.turnPlayer, humanIoT):
-			newMsg = messageUtil.buildToShadowMsg("move", self.turnPlayer.position - 1, move)
+		if isinstance(self.turnPlayer, players.humanIoT):
+			# print("SENDING:", self.turnPlayer.position - 1)
+			newMsg = messageUtil.buildToShadowMsg("move", int(self.turnPlayer.position - 1), int(move))
 			awsGateway.instance.sendMsgToIoT(self.turnPlayer.playerName, newMsg)
 		if self.visualize:
 			self.draw_board()
@@ -289,3 +295,4 @@ size = (width, height)
 RADIUS = int(SQUARESIZE/2 - 5)
 
 screen = None
+

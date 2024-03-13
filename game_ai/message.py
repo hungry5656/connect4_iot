@@ -2,6 +2,7 @@
 from enum import Enum
 from copy import deepcopy
 import gameConstant
+import json
 
 ToShadowTemp = {
     "sender": 1,
@@ -35,7 +36,9 @@ class messageUtil():
         return tempMsg
     
     def parseMoveMsg(message, expectedName):
-        tempMsg = message["state"]["reported"]
+        messageJson = json.loads(message)
+        print(messageJson)
+        tempMsg = messageJson["reported"]
         if tempMsg["sender"] == 1:
             return -1, None
         elif tempMsg["shadowName"] != expectedName:
@@ -47,11 +50,18 @@ class messageUtil():
                 return 0, tempMsg["message"]
     
     def parseCMDMsg(message):
-        tempMsg = message["state"]["reported"]
+        messageJson = json.loads(message)
+        print(messageJson)
+        tempMsg = messageJson["reported"]
+        print("DEBUG: parsing...................")
+        print(tempMsg["sender"])
         if tempMsg["sender"] == 1:
+            print("fjdaskljdfsklajfsklajfkldsajfldas11111111111111111111111111111111")
             return -1, None
         else:
             if tempMsg["messageType"] != "cmd":
-                return 0, None
+                print("fjdaskljdfsklajfsklajfkldsajfldas2222222222222222222222222222222")
+                return -1, None
             else:
-                return 0, tempMsg["message"]
+                print("fjdaskljdfsklajfsklajfkldsajfldas33333333333333333333333333333333")
+                return 0, tempMsg
