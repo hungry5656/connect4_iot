@@ -1,5 +1,5 @@
 /*
- * ui_constant.h
+ * constants.h
  *
  *  Created on: Mar 2, 2024
  *      Author: hungry5656
@@ -13,8 +13,8 @@
 #define STR_PLAYER_SELF     "YOU"
 #define STR_PLAYER_HUMAN    "HUMAN"
 #define STR_PLAYER_AI       "AI"
-#define SPI_IF_BIT_RATE  800000
-#define TR_BUFF_SIZE     100
+#define SPI_IF_BIT_RATE     800000
+#define TR_BUFF_SIZE        100
 
 // Common Color
 #define	BLACK           0x0000
@@ -107,8 +107,29 @@
 #define HORIZONTAL_MODE         0
 #define VERTICAL_MODE           1
 
+// To Server CMD
+#define START_GAME              100
+#define QUIT_GAME               101
+
+// To Shadow CMD
+#define GAME_CLOSE              0
+#define SERVER_DOWN             1
+#define SERVER_REFUSED          2
+#define INVALID_INPUT           3
+#define OPPONENT_QUIT           4
+#define SET_PLAYER0             5
+#define SET_PLAYER1             6
+
+#define JSON_MSG_1              "{\"state\": {\r\n\"reported\": {\r\n\"sender\": 0,\r\n\"messageType\": \""
+#define JSON_MSG_2              "\",\r\n\"shadowName\": \""
+#define JSON_MSG_3              "\",\r\n\"message\": "
+#define JSON_MSG_4              "\r\n}}}\r\n\r\n"
+#define MSG_TYPE_CMD            "cmd"
+#define MSG_TYPE_MOVE           "move"
+
 
 extern unsigned int menuCursorX[];
 extern unsigned char* levels[];
 extern unsigned int colors[];
 extern unsigned int maxIdxArray[];
+extern char* jsonTokenArrays[];

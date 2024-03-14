@@ -6,7 +6,7 @@
  */
 
 #include "ui.h"
-#include "ui_constant.h"
+#include "constants.h"
 
 void uiInit() {
     // memcpy(g_ucTxBuff,MASTER_MSG,sizeof(MASTER_MSG));

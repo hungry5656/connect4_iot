@@ -705,7 +705,7 @@ int connectToAccessPoint() {
     return 0;
 }
 
-int http_post(int iTLSSockID, char* jsonData){
+int http_post(int iTLSSockID, char* msgSend){
     char acSendBuff[512];
     char acRecvbuff[1460];
     char cCLLength[200];
@@ -721,7 +721,7 @@ int http_post(int iTLSSockID, char* jsonData){
     pcBufHeaders += strlen(CHEADER);
     strcpy(pcBufHeaders, "\r\n\r\n");
 
-    int dataLength = strlen(jsonData);
+    int dataLength = strlen(msgSend);
 
     strcpy(pcBufHeaders, CTHEADER);
     pcBufHeaders += strlen(CTHEADER);
@@ -735,12 +735,12 @@ int http_post(int iTLSSockID, char* jsonData){
     strcpy(pcBufHeaders, CLHEADER2);
     pcBufHeaders += strlen(CLHEADER2);
 
-    strcpy(pcBufHeaders, jsonData);
+    strcpy(pcBufHeaders, msgSend);
     pcBufHeaders += dataLength;
 
     int testDataLength = strlen(pcBufHeaders);
 
-    UART_PRINT(acSendBuff);
+    // UART_PRINT(acSendBuff);
 
 
     //
@@ -762,17 +762,17 @@ int http_post(int iTLSSockID, char* jsonData){
     }
     else {
         acRecvbuff[lRetVal+1] = '\0';
-        UART_PRINT(acRecvbuff);
-        UART_PRINT("\n\r\n\r");
+        // UART_PRINT(acRecvbuff);
+        // UART_PRINT("\n\r\n\r");
     }
 
     return 0;
 }
 
-int http_get(int iTLSSockID){
+int http_get(int iTLSSockID, char *msgReceived){
     char acSendBuff[512];
     char acRecvbuff[1460];
-    char cCLLength[200];
+//    char cCLLength[200];
     char* pcBufHeaders;
     int lRetVal = 0;
 
@@ -787,9 +787,6 @@ int http_get(int iTLSSockID){
 
     int testDataLength = strlen(pcBufHeaders);
 
-    UART_PRINT(acSendBuff);
-
-
     //
     // Send the packet to the server */
     //
@@ -808,19 +805,30 @@ int http_get(int iTLSSockID){
            return lRetVal;
     }
     else {
-        acRecvbuff[lRetVal+1] = '\0';
-        UART_PRINT(acRecvbuff);
-        UART_PRINT("\n\r\n\r");
+        acRecvbuff[lRetVal] = '\0';
+        strcpy(msgReceived, acRecvbuff);
     }
 
     return 0;
 }
 
+int pollMsg(int iTLSSockID, char* msgReceived){
+    while(1){
+        MAP_UtilsDelay(800000);
+        if (http_get(iTLSSockID, msgReceived) < 0) {
+            return -1;
+        }
+        if (isValidResponse(msgReceived) == 1) {
+            break;
+        }
+    }
+    return 1;
+}
 
 /* TODO: migrate that to tls_simplink files
 
-// #define DATA1 "{\"state\": {\r\n\"desired\" : {\r\n\"color\" : \"green\"\r\n}}}\r\n\r\n"
-// #define DATA1 "{\"state\": {\"desired\" : {\"color\" : \"green\"}}}"
+// #define DATA1 "{\"state\": {\r\n\"reported\" : {\r\n\"color\" : \"green\"\r\n}}}\r\n\r\n"
+// #define DATA1 "{\"state\": {\"reported\" : {\"color\" : \"green\"}}}"
 
     // static long InitializeAppVariables();
 // static int tls_connect();

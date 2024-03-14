@@ -8,6 +8,7 @@
 #ifndef USR_INPUT_H_
 #define USR_INPUT_H_
 
+
 #include <stdio.h>
 
 //Driverlib includes
@@ -29,7 +30,7 @@
 
 // external libraries
 #include "tv_code.h"
-#include "ui_constant.h"
+#include "constants.h"
 
 // previous part MACRO
 #define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))

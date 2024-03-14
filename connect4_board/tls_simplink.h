@@ -63,6 +63,7 @@
 // external libraries
 #include "tv_code.h"
 #include "aws_credential.h"
+#include "messages.h"
 
 // Application specific status/error codes
 typedef enum{
@@ -102,8 +103,10 @@ int set_time();
 long InitializeAppVariables();
 int tls_connect();
 int connectToAccessPoint();
-int http_post(int, char*);
-int http_get(int iTLSSockID);
+int http_post(int iTLSSockID, char* msgReceived);
+int http_get(int iTLSSockID, char *msgReceived);
+int pollingMsg(int iTLSSockID, char* msgReceived);
+
 char* jsonWrapMessage(char*);
 
 
