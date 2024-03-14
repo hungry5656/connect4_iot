@@ -34,7 +34,7 @@
 #define AI_PLAYER_ID    36
 
 // Null pointer
-#define NULL 0
+// #define NULL 0
 // Max error string length
 #define MAX_ERR_LEN 1024
 
@@ -49,7 +49,7 @@ struct C4_PLAYER;
 // Alias `struct C4_GAME_OBJ` to `connect4_t`
 typedef struct C4_GAME_OBJ  connect4_t;
 
-// Alias `struct C4_PLAYER` to `connect4_t`
+// Alias `struct C4_PLAYER` to `player_t`
 typedef struct C4_PLAYER    player_t;
 
 // PRIVATE MEMBERS
@@ -65,12 +65,6 @@ static int imin(int a, int b);
  * Messages must be MAX_ERR_LEN char or less in length
  */
 static void fmt_err_c4();
-
-
-/*
- * Initialize a C4_GAME_OBJ
- */
-static bool init_c4t(uint8_t player1_id, uint8_t player2_id, bool player1_is_local);
 
 /*
  * Modify game state for a move
@@ -92,12 +86,19 @@ static uint8_t play_turn();
  */
 static uint8_t wait_turn();
 
-// PUBLIC MEMBERS
-
 /*
- * Obtain Connect 4 singleton. Initialize if unavailable.
+ * Check the end-conditions for the game.
+ * Returns 1 if there is a winner
+ * Returns 2 if there is a tie
+ * Returns 0 otherwise
  */
-connect4_t  get_game_c4();
+static uint8_t check_game_over_c4(uint8_t move_col, player_t* last_move_player);
+
+// PUBLIC MEMBERS
+/*
+ * Initialize a C4_GAME_OBJ
+ */
+bool init_c4t(uint8_t player1_id, uint8_t player2_id, bool player1_is_local);
 
 /*
  * Check if a game is initialized.
@@ -121,13 +122,6 @@ bool        start_game_c4();
  */
 bool        reset_game_c4();
 
-/*
- * Check the end-conditions for the game.
- * Returns 1 if there is a winner
- * Returns 2 if there is a tie
- * Returns 0 otherwise
- */
-uint8_t     check_game_over_c4(uint8_t move_col, player_t* last_move_player);
-
+static void set_board_state();
 
 #endif /* C4_H_ */
