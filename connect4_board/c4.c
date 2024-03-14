@@ -15,6 +15,9 @@
 struct C4_PLAYER {
     player_t* opponent;
     uint8_t id;
+    uint16_t color;
+    uint8_t* name;
+
 }; // player_t
 
 struct C4_GAME_OBJ {
@@ -65,9 +68,9 @@ static void fmt_err_c4(const char* err_msg) {
 }
 
 static void init_player(player_t* player, player_t* opponent, uint8_t player_id) {
-    // TODO: consider local player vs. nonlocal player
     player->opponent = opponent;
     player->id = player_id;
+    player->color = player_id % 2 == 0 ? THEME_RED : THEME_YELLOW;
 }
 
 static bool set_winner(bool is_tie){
@@ -77,10 +80,6 @@ static bool set_winner(bool is_tie){
     }
 
     GAME.winner = is_tie ? &TIE_PLAYER : GAME.player_turn;
-
-    // TODO: winner post-logic
-    //...
-
     return false;
 }
 
@@ -93,7 +92,10 @@ static bool do_move(player_t* player, uint8_t selected_column) {
         return true;
     }
 
+    // TODO: Pick color based on player
     GAME.board[row][selected_column] = player->id;
+    drawToken(row, selected_column, player->color);
+
     GAME.lowest_empty_col_index[selected_column]--;
     GAME.num_moves++;
 
@@ -150,7 +152,10 @@ static uint8_t check_game_over_c4(uint8_t move_col, player_t* last_move_player) 
         }
 
         if (count == 4) {
-            // TODO: draw line
+            int first = s - 3;
+            int last = s;
+            drawWinLine(move_row, first, move_row, last);
+
             return 1;
         }
     }
@@ -167,7 +172,9 @@ static uint8_t check_game_over_c4(uint8_t move_col, player_t* last_move_player) 
         }
 
         if (count == 4) {
-            // TODO: draw line
+            int first = s - 3;
+            int last = s;
+            drawWinLine(first, move_col, last, move_col);
             return 1;
         }
     }
@@ -194,7 +201,7 @@ static uint8_t check_game_over_c4(uint8_t move_col, player_t* last_move_player) 
         col++;
     }
     if (count >= 4) {
-        // TODO: draw line
+        drawWinLine(move_row, move_col, row, col);
         return 1;
     }
 
@@ -220,7 +227,7 @@ static uint8_t check_game_over_c4(uint8_t move_col, player_t* last_move_player) 
         col++;
     }
     if (count >= 4) {
-        // TODO: draw line
+        drawWinLine(move_row, move_col, row, col);
         return 1;
     }
 
@@ -370,6 +377,16 @@ bool start_game_c4() {
 
     if (game_over) {
         set_winner(is_tie);
+        if(is_tie) {
+            drawMessage(MSG_TIE, WHITE);
+        } else {
+            if(GAME.winner == GAME.local_player) {
+                drawMessage(MSG_WIN, GAME.winner.color);
+            } else {
+                drawMessage(MSG_LOSE, GAME.winner.color);
+            }
+        }
+
         GAME.status = GAME_OVER;
 
         // DEBUG

@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "uart_if.h"
+#include "constants.h"
 
 // MACROS
 // OPTIONS
