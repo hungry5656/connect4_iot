@@ -1,4 +1,5 @@
 import argparse
+import time
 from connect4 import connect4
 from players import human2, stupidAI, randomAI, human, minimaxAI, alphaBetaAI, humanIoT
 from montecarlo import monteCarloAI
@@ -104,9 +105,11 @@ if __name__ == '__main__':
 		if isMultiplayer:
 			newMsg2 = messageUtil.buildToShadowMsg("cmd", 1, gameConstant.SET_PLAYER1)
 			awsGateway.instance.sendMsgToIoT(player2.playerName, newMsg2)
+			time.sleep(1)
+			PollMsg = messageUtil.buildPollingMsg("cmd")
+			awsGateway.instance.sendMsgToIoT(player2.playerName, PollMsg)
 		print(player1.playerName)
 		print(player2.playerName)
 		c4 = connect4(player1, player2, board_shape=(w, l), visualize=visualize,
 					limit_players=limit_players, time_limit=time_limit, verbose=verbose)
 		c4.play()
-

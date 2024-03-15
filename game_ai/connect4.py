@@ -14,6 +14,7 @@ import players
 import threading
 import awsGateway
 from message import messageUtil
+import awsAccountSys
 
 
 def time_limit(func, args, time_):
@@ -132,11 +133,31 @@ class connect4():
 			print(time.time() - currenttime)
 		if self.save:
 			self.saveGame()
+		isP1Won = -1
 		if self.verbose:
 			if len(self.history[0]) + len(self.history[1]) == self.shape[0] * self.shape[1]:
 				print('The game has tied')
+				isP1Won = 2
 			else:
 				print('Player ', self.turnPlayer.opponent.position, ' has won')
+				isP1Won = self.turnPlayer.opponent.position - 1
+				
+		if isinstance(self.player1, players.humanIoT):
+			name1 = self.player1.playerName
+			print(name1)
+			awsAccountSys.storeGameResult(name1, isP1Won)
+			awsAccountSys.sendToSNS(name1, awsAccountSys.showGameResult(name1))
+        
+		if isinstance(self.player2, players.humanIoT):
+			isP2Won = isP1Won
+			if isP1Won != 2:
+				isP2Won = int(not isP1Won)
+			name2 = self.player2.playerName
+			print(name1)
+			awsAccountSys.storeGameResult(name2, isP1Won)
+			awsAccountSys.sendToSNS(name2, awsAccountSys.showGameResult(name1))
+			
+		
 		spectating = True
 		while spectating and self.visualize:
 			for event in pygame.event.get():

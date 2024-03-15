@@ -23,6 +23,18 @@ class messageUtil():
     
     def getToServerTemplate():
         return deepcopy(ToServerTemp)
+    
+    def buildPollingMsg(msgType):
+        tempMsg = {
+            'state': {
+                'reported': messageUtil.getToShadowTemplate()
+            }
+        }
+        tempMsg["state"]["reported"]["sender"] = 0
+        tempMsg["state"]["reported"]["messageType"] = msgType
+        tempMsg["state"]["reported"]["shadowName"] = "AI"
+        tempMsg["state"]["reported"]["message"] = ""
+        return tempMsg
 
     def buildToShadowMsg(msgType, currTurnIdx, message):
         tempMsg = {
