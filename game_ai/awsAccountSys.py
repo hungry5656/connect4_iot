@@ -3,6 +3,7 @@ import csv
 import pandas as pd
 import warnings
 import boto3
+import sensitiveConfg
 warnings.filterwarnings('ignore')
 
 def storeGameResult(shadowName, result):
@@ -24,7 +25,7 @@ def showGameResult(shadowName):
 
 def sendToSNS(shadowName, msg):
     sns_client = boto3.client('sns', region_name='us-east-1')
-    topic_arn = 'arn:aws:sns:us-east-1:851725326245:' + shadowName + '_Message'
+    topic_arn = sensitiveConfig.AWS_SNS_ARN + shadowName + '_Message'
     print(topic_arn)
 
     # Publish the message to the specified SNS topic
