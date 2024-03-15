@@ -246,7 +246,6 @@ void drawPlayerInfo(unsigned char player1[], unsigned char player2[]){
     drawString(73, 0, STR_PLAYER2, 2, TXT_CHAR_SIZE, THEME_YELLOW); // print P2
     drawString(91, 0, player2, strlen(player2), TXT_CHAR_SIZE, CYAN); // print player2 name
 
-    drawCursor(BOARD_CURSOR_X, BOARD_CURSOR_Y, CURSOR_DOWN, WHITE); // arrow_down
     // drawMessage(MSG_CONNECTING, HELL_RED); // an example of drawing a message
 }
 

@@ -135,6 +135,7 @@ static unsigned int play_turn() {
                              // Listen for game quit
     bool valid_move = false;
     drawMessage(MSG_MAKE_MOVE, YELLOW);
+    drawCursor(BOARD_CURSOR_X, BOARD_CURSOR_Y, CURSOR_DOWN, WHITE); // arrow_down
 
     while (!valid_move) {
         // selected_column = 2; // DUMMY VALUE until above is satisfied
@@ -483,7 +484,8 @@ bool start_game_c4() {
 
         // DEBUG
         print_game_state();
-        // 
+        // 5 second
+        MAP_UtilsDelay(40000000);
     }
 
     return false;

@@ -171,6 +171,9 @@ unsigned int getUsrInput(unsigned int stateId) {
                 ResetFlag();
                 finishFlag = 0;
                 inputFlag = 0;
+                if (stateId == GAME_STATE) {
+                    eraseCursor(BOARD_HOLE_X + currIdx * 17, BOARD_CURSOR_Y, CURSOR_DOWN);
+                }
                 return currIdx;
 
             } else if (thisChar == BACK_CHAR) {
@@ -179,6 +182,9 @@ unsigned int getUsrInput(unsigned int stateId) {
                 ResetFlag();
                 finishFlag = 0;
                 inputFlag = 0;
+                if (stateId == GAME_STATE) {
+                    eraseCursor(BOARD_HOLE_X + currIdx * 17, BOARD_CURSOR_Y, CURSOR_DOWN);
+                }
                 return BACK_NUM;
 
             } else if (thisChar == INVALID_CHAR) {
