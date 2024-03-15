@@ -83,12 +83,12 @@ void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent) {
                    pWlanEvent->EventData.STAandP2PModeWlanConnected.bssid,
                    SL_BSSID_LENGTH);
 
-            UART_PRINT("[WLAN EVENT] STA Connected to the AP: %s , "
-                       "BSSID: %x:%x:%x:%x:%x:%x\n\r",
-                       g_ucConnectionSSID,g_ucConnectionBSSID[0],
-                       g_ucConnectionBSSID[1],g_ucConnectionBSSID[2],
-                       g_ucConnectionBSSID[3],g_ucConnectionBSSID[4],
-                       g_ucConnectionBSSID[5]);
+            // UART_PRINT("[WLAN EVENT] STA Connected to the AP: %s , "
+            //            "BSSID: %x:%x:%x:%x:%x:%x\n\r",
+            //            g_ucConnectionSSID,g_ucConnectionBSSID[0],
+            //            g_ucConnectionBSSID[1],g_ucConnectionBSSID[2],
+            //            g_ucConnectionBSSID[3],g_ucConnectionBSSID[4],
+            //            g_ucConnectionBSSID[5]);
         }
         break;
 
@@ -103,20 +103,20 @@ void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent) {
             // If the user has initiated 'Disconnect' request,
             //'reason_code' is SL_USER_INITIATED_DISCONNECTION
             if(SL_USER_INITIATED_DISCONNECTION == pEventData->reason_code) {
-                UART_PRINT("[WLAN EVENT]Device disconnected from the AP: %s,"
-                    "BSSID: %x:%x:%x:%x:%x:%x on application's request \n\r",
-                           g_ucConnectionSSID,g_ucConnectionBSSID[0],
-                           g_ucConnectionBSSID[1],g_ucConnectionBSSID[2],
-                           g_ucConnectionBSSID[3],g_ucConnectionBSSID[4],
-                           g_ucConnectionBSSID[5]);
+                // UART_PRINT("[WLAN EVENT]Device disconnected from the AP: %s,"
+                //     "BSSID: %x:%x:%x:%x:%x:%x on application's request \n\r",
+                //            g_ucConnectionSSID,g_ucConnectionBSSID[0],
+                //            g_ucConnectionBSSID[1],g_ucConnectionBSSID[2],
+                //            g_ucConnectionBSSID[3],g_ucConnectionBSSID[4],
+                //            g_ucConnectionBSSID[5]);
             }
             else {
-                UART_PRINT("[WLAN ERROR]Device disconnected from the AP AP: %s, "
-                           "BSSID: %x:%x:%x:%x:%x:%x on an ERROR..!! \n\r",
-                           g_ucConnectionSSID,g_ucConnectionBSSID[0],
-                           g_ucConnectionBSSID[1],g_ucConnectionBSSID[2],
-                           g_ucConnectionBSSID[3],g_ucConnectionBSSID[4],
-                           g_ucConnectionBSSID[5]);
+                // UART_PRINT("[WLAN ERROR]Device disconnected from the AP AP: %s, "
+                //            "BSSID: %x:%x:%x:%x:%x:%x on an ERROR..!! \n\r",
+                //            g_ucConnectionSSID,g_ucConnectionBSSID[0],
+                //            g_ucConnectionBSSID[1],g_ucConnectionBSSID[2],
+                //            g_ucConnectionBSSID[3],g_ucConnectionBSSID[4],
+                //            g_ucConnectionBSSID[5]);
             }
             memset(g_ucConnectionSSID,0,sizeof(g_ucConnectionSSID));
             memset(g_ucConnectionBSSID,0,sizeof(g_ucConnectionBSSID));
@@ -124,8 +124,8 @@ void SimpleLinkWlanEventHandler(SlWlanEvent_t *pWlanEvent) {
         break;
 
         default: {
-            UART_PRINT("[WLAN EVENT] Unexpected event [0x%x]\n\r",
-                       pWlanEvent->Event);
+            // UART_PRINT("[WLAN EVENT] Unexpected event [0x%x]\n\r",
+            //            pWlanEvent->Event);
         }
         break;
     }
@@ -158,22 +158,22 @@ void SimpleLinkNetAppEventHandler(SlNetAppEvent_t *pNetAppEvent) {
             //Gateway IP address
             g_ulGatewayIP = pEventData->gateway;
 
-            UART_PRINT("[NETAPP EVENT] IP Acquired: IP=%d.%d.%d.%d , "
-                       "Gateway=%d.%d.%d.%d\n\r",
-            SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,3),
-            SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,2),
-            SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,1),
-            SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,0),
-            SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,3),
-            SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,2),
-            SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,1),
-            SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,0));
+        //     UART_PRINT("[NETAPP EVENT] IP Acquired: IP=%d.%d.%d.%d , "
+        //                "Gateway=%d.%d.%d.%d\n\r",
+        //     SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,3),
+        //     SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,2),
+        //     SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,1),
+        //     SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.ip,0),
+        //     SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,3),
+        //     SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,2),
+        //     SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,1),
+        //     SL_IPV4_BYTE(pNetAppEvent->EventData.ipAcquiredV4.gateway,0));
         }
         break;
 
         default: {
-            UART_PRINT("[NETAPP EVENT] Unexpected event [0x%x] \n\r",
-                       pNetAppEvent->Event);
+            // UART_PRINT("[NETAPP EVENT] Unexpected event [0x%x] \n\r",
+            //            pNetAppEvent->Event);
         }
         break;
     }
@@ -213,9 +213,9 @@ void SimpleLinkGeneralEventHandler(SlDeviceEvent_t *pDevEvent) {
     // Most of the general errors are not FATAL are are to be handled
     // appropriately by the application
     //
-    UART_PRINT("[GENERAL EVENT] - ID=[%d] Sender=[%d]\n\n",
-               pDevEvent->EventData.deviceEvent.status,
-               pDevEvent->EventData.deviceEvent.sender);
+    // UART_PRINT("[GENERAL EVENT] - ID=[%d] Sender=[%d]\n\n",
+    //            pDevEvent->EventData.deviceEvent.status,
+    //            pDevEvent->EventData.deviceEvent.sender);
 }
 
 
@@ -237,20 +237,20 @@ void SimpleLinkSockEventHandler(SlSockEvent_t *pSock) {
         case SL_SOCKET_TX_FAILED_EVENT:
             switch( pSock->socketAsyncEvent.SockTxFailData.status) {
                 case SL_ECLOSE: 
-                    UART_PRINT("[SOCK ERROR] - close socket (%d) operation "
-                                "failed to transmit all queued packets\n\n", 
-                                    pSock->socketAsyncEvent.SockTxFailData.sd);
+                    // UART_PRINT("[SOCK ERROR] - close socket (%d) operation "
+                    //             "failed to transmit all queued packets\n\n", 
+                    //                 pSock->socketAsyncEvent.SockTxFailData.sd);
                     break;
                 default: 
-                    UART_PRINT("[SOCK ERROR] - TX FAILED  :  socket %d , reason "
-                                "(%d) \n\n",
-                                pSock->socketAsyncEvent.SockTxFailData.sd, pSock->socketAsyncEvent.SockTxFailData.status);
+                    // UART_PRINT("[SOCK ERROR] - TX FAILED  :  socket %d , reason "
+                    //             "(%d) \n\n",
+                    //             pSock->socketAsyncEvent.SockTxFailData.sd, pSock->socketAsyncEvent.SockTxFailData.status);
                   break;
             }
             break;
 
         default:
-            UART_PRINT("[SOCK EVENT] - Unexpected Event [%x0x]\n\n",pSock->Event);
+            // UART_PRINT("[SOCK EVENT] - Unexpected Event [%x0x]\n\n",pSock->Event);
           break;
     }
 }
@@ -740,6 +740,7 @@ int http_post(int iTLSSockID, char* msgSend){
 
     int testDataLength = strlen(pcBufHeaders);
 
+    // UART_PRINT("\n\r\n\r");
     // UART_PRINT(acSendBuff);
 
 
@@ -814,8 +815,11 @@ int http_get(int iTLSSockID, char *msgReceived){
 
 int pollMsg(int iTLSSockID, char* msgReceived){
     while(1){
-        MAP_UtilsDelay(800000);
+        // 0.5 sec delay
+        MAP_UtilsDelay(4000000);
+        // Report("DEBUG: POLLING\r\n");
         if (http_get(iTLSSockID, msgReceived) < 0) {
+            // Report("ERROR: return false when do GET\r\n");
             return -1;
         }
         if (isValidResponse(msgReceived) == 1) {

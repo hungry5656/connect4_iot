@@ -20,7 +20,7 @@
 #include "constants.h"
 
 int isValidResponse(char* msgReceived);
-int parseServerMoveMsg(char* msgReceived, unsigned int* nextMoveIdx, unsigned int currTurnIdx);
+int parseServerMsg(char* msgReceived, unsigned int* mainContent, unsigned int currTurnIdx, unsigned int isCMD);
 int buildToServerMsg(char* msgSend, unsigned int mainContent, unsigned int isCMD);
 
 #endif /* MESSAGES_H_ */

@@ -137,6 +137,7 @@ void main() {
     unsigned int currState = MENU_STATE;
     unsigned int isAI = 0;
     unsigned int levelIdx = 0;
+    long lRetVal = -1;
 
     BoardInit();
     PinMuxConfig();
@@ -144,8 +145,21 @@ void main() {
     InitTerm();
     ClearTerm();
     MAP_PRCMPeripheralReset(PRCM_GSPI);
-    UART_PRINT("My terminal works!\n\r");
+    // UART_PRINT("My terminal works!\n\r");
     // configure system interrupt: systick and GPIO
+
+    lRetVal = connectToAccessPoint();
+    lRetVal = set_time();
+    if(lRetVal < 0) {
+        UART_PRINT("Unable to set time in the device");
+        LOOP_FOREVER();
+    }
+    //Connect to the website with TLS encryption
+    lRetVal = tls_connect();
+    if(lRetVal < 0) {
+        ERR_PRINT(lRetVal);
+    }
+
     uiInit();
     setupInterrupt();
 
@@ -163,10 +177,15 @@ void main() {
             eraseMenu();
         } else if (currState == GAME_STATE) {
             drawBoard();
-            // unsigned int nextIdx;
-            // TODO: play games
-            // Param: isAI, levelIdx
-            unsigned int nextIdx = getUsrInput(GAME_STATE);
+            if (init_c4t(isAI, levelIdx, lRetVal) != 0) {
+                reset_game_c4();
+                eraseBoard();
+                currState = MENU_STATE;
+                continue;
+            }
+            // unsigned int nextIdx = getUsrInput(GAME_STATE);
+            start_game_c4();
+            reset_game_c4();
             currState = MENU_STATE;
             eraseBoard();
         } else {

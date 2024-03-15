@@ -8,7 +8,6 @@
 #ifndef C4_H_
 #define C4_H_
 
-#include <math.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
@@ -16,10 +15,13 @@
 #include "uart_if.h"
 #include "constants.h"
 
+#include "messages.h"
+#include "tls_simplink.h"
+
 // MACROS
 // OPTIONS
-#define BOARD_WIDTH     6 // MAX 255
-#define BOARD_HEIGHT    7 // MAX 255
+#define BOARD_WIDTH     7 // MAX 255
+#define BOARD_HEIGHT    6 // MAX 255
 
 // Game state
 #define GAME_INACTIVE   0
@@ -58,34 +60,34 @@ typedef struct C4_PLAYER    player_t;
 /*
  * Standard integer max/min methods
  */
-static int imax(int a, int b);
-static int imin(int a, int b);
+// static int imax(int a, int b);
+// static int imin(int a, int b);
 
 /*
  * Sent a formatted error message over UART
  * Messages must be MAX_ERR_LEN char or less in length
  */
-static void fmt_err_c4();
+// static void fmt_err_c4();
 
 /*
  * Modify game state for a move
  */
-static bool do_move(player_t* player, uint8_t selected_column);
+// static bool do_move(player_t* player, unsigned int selected_column);
 
 /*
  * Transition from player 1 turn to player 2
  */
-static void turn_transition();
+// static void turn_transition();
 
 /*
  * Play a turn - run when it is the local player's turn
  */
-static uint8_t play_turn();
+// static unsigned int play_turn();
 
 /*
  * Wait a turn - run when it is the non-local player's turn
  */
-static uint8_t wait_turn();
+// static unsigned int wait_turn();
 
 /*
  * Check the end-conditions for the game.
@@ -93,13 +95,13 @@ static uint8_t wait_turn();
  * Returns 2 if there is a tie
  * Returns 0 otherwise
  */
-static uint8_t check_game_over_c4(uint8_t move_col, player_t* last_move_player);
+// static unsigned int check_game_over_c4(unsigned int move_col, player_t* last_move_player);
 
 // PUBLIC MEMBERS
 /*
  * Initialize a C4_GAME_OBJ
  */
-bool init_c4t(uint8_t player1_id, uint8_t player2_id, bool player1_is_local);
+bool init_c4t(unsigned int isAI, unsigned int levelIdx, int iTLSSockID);
 
 /*
  * Check if a game is initialized.
@@ -123,6 +125,6 @@ bool        start_game_c4();
  */
 bool        reset_game_c4();
 
-static void set_board_state();
+// void set_board_state();
 
 #endif /* C4_H_ */

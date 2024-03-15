@@ -40,7 +40,7 @@
 #define MAXIMUM_MSG        "111111111111111111111"
 #define MSG_CONNECTING     "CONNECTING..."          // Size: 13
 #define MSG_MAKE_MOVE      "MAKE YOUR MOVE"         // Size: 14
-#define MSG_WAIT           "WAIT YOUR OPPONENT"     // Size: 18
+#define MSG_WAIT           "WAIT FOR THE OPPONENT"  // Size: 18
 #define MSG_INVALID        "INVALID MOVE!"          // Size: 13
 #define MSG_WIN            "======!YOU WIN!======"  // Size: 21
 #define MSG_LOSE           "======&YOU LOSE&====="  // Size: 21
@@ -120,10 +120,10 @@
 #define SET_PLAYER0             5
 #define SET_PLAYER1             6
 
-#define JSON_MSG_1              "{\"state\": {\r\n\"reported\": {\r\n\"sender\": 0,\r\n\"messageType\": \""
-#define JSON_MSG_2              "\",\r\n\"shadowName\": \""
-#define JSON_MSG_3              "\",\r\n\"message\": "
-#define JSON_MSG_4              "\r\n}}}\r\n\r\n"
+#define JSON_MSG_1              "{\"state\": {\"reported\": {\"sender\": 0,\"messageType\": \""
+#define JSON_MSG_2              "\",\"shadowName\": \""
+#define JSON_MSG_3              "\",\"message\": "
+#define JSON_MSG_4              "}}}\r\n\r\n"
 #define MSG_TYPE_CMD            "cmd"
 #define MSG_TYPE_MOVE           "move"
 

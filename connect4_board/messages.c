@@ -18,7 +18,7 @@ static int jsoneq(const char *json, jsmntok_t *tok, const char *s) {
 
 int isValidResponse(char* msgReceived) {
     char *idx = strstr(msgReceived, "sender\":");
-    printf("%ld\n%c\n", idx, idx - msgReceived + 8, msgReceived[idx - msgReceived + 8]);
+    // printf("%ld\n%c\n", idx, idx - msgReceived + 8, msgReceived[idx - msgReceived + 8]);
     // 31
     // if (msgReceived[31] != '1') {
     if (msgReceived[idx - msgReceived + 8] != '1') {
@@ -27,7 +27,7 @@ int isValidResponse(char* msgReceived) {
     return 1;
 }
 
-int parseServerMoveMsg(char* msgReceived, unsigned int* nextMoveIdx, unsigned int currTurnIdx) {
+int parseServerMsg(char* msgReceived, unsigned int* mainContent, unsigned int currTurnIdx, unsigned int isCMD) {
     int i, tokenNum;
     jsmn_parser parser;
     jsmntok_t jsonTokens[128];
@@ -51,22 +51,40 @@ int parseServerMoveMsg(char* msgReceived, unsigned int* nextMoveIdx, unsigned in
             continue;
         }
         if (isParsing == 1) {
-            if (jsoneq(msgReceived, &jsonTokens[i], "sender") == 0) {
+            // if (jsoneq(msgReceived, &jsonTokens[i], "sender") == 0) {
+            //     sprintf(testStr, "%.*s", jsonTokens[i + 1].end - jsonTokens[i + 1].start,
+            //  msgReceived + jsonTokens[i + 1].start);
+            //     UART_PRINT("%s\r\n", testStr);
+            // } else 
+            if (jsoneq(msgReceived, &jsonTokens[i], "messageType") == 0) {
+            //     sprintf(testStr, "%.*s", jsonTokens[i + 1].end - jsonTokens[i + 1].start,
+            //  msgReceived + jsonTokens[i + 1].start);
+            //     UART_PRINT("%s\r\n", testStr);
                 sprintf(testStr, "%.*s", jsonTokens[i + 1].end - jsonTokens[i + 1].start,
-             msgReceived + jsonTokens[i + 1].start);
-                UART_PRINT("%s\r\n", testStr);
-            } else if (jsoneq(msgReceived, &jsonTokens[i], "messageType") == 0) {
-                sprintf(testStr, "%.*s", jsonTokens[i + 1].end - jsonTokens[i + 1].start,
-             msgReceived + jsonTokens[i + 1].start);
-                UART_PRINT("%s\r\n", testStr);
+                msgReceived + jsonTokens[i + 1].start);
+                if (isCMD) {
+                    if (strcmp(testStr, MSG_TYPE_CMD) != 0) {
+                        return -1;
+                    }
+                } else {
+                    if (strcmp(testStr, MSG_TYPE_MOVE) != 0) {
+                        return -1;
+                    }
+                }
+
             } else if (jsoneq(msgReceived, &jsonTokens[i], "currTurnIdx") == 0) {
                 sprintf(testStr, "%.*s", jsonTokens[i + 1].end - jsonTokens[i + 1].start,
              msgReceived + jsonTokens[i + 1].start);
-                UART_PRINT("%s\r\n", testStr);
+                if (isCMD == 0) {
+                    if (currTurnIdx != atoi(testStr)) {
+                        Report("aadsagdsdggggjjg\r\n");
+                        return -1;
+                    }
+                }
             } else if (jsoneq(msgReceived, &jsonTokens[i], "message") == 0) {
                 sprintf(testStr, "%.*s", jsonTokens[i + 1].end - jsonTokens[i + 1].start,
              msgReceived + jsonTokens[i + 1].start);
-                UART_PRINT("%s\r\n", testStr);
+                *mainContent = atoi(testStr);
                 break;
             }
         }

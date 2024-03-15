@@ -242,7 +242,7 @@ void drawPlayerInfo(unsigned char player1[], unsigned char player2[]){
     drawCursor(PLAYER_CURSOR_X, PLAYER_CURSOR_Y, CURSOR_RIGHT, ORANGE); // draw cursor left
     drawString(9, 0, STR_PLAYER1, 2, TXT_CHAR_SIZE, THEME_RED); // print P1
     drawString(27, 0, player1, strlen(player1), TXT_CHAR_SIZE, ORANGE); // print player1 name
-    drawCursor(PLAYER_CURSOR_X + 64, PLAYER_CURSOR_Y, CURSOR_RIGHT, ORANGE); // draw cursor right
+    // drawCursor(PLAYER_CURSOR_X + 64, PLAYER_CURSOR_Y, CURSOR_RIGHT, ORANGE); // draw cursor right
     drawString(73, 0, STR_PLAYER2, 2, TXT_CHAR_SIZE, THEME_YELLOW); // print P2
     drawString(91, 0, player2, strlen(player2), TXT_CHAR_SIZE, CYAN); // print player2 name
 
