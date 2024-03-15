@@ -106,7 +106,7 @@ class connect4():
 		# send move to opponent if opponent is humanIoT
 		if isinstance(self.turnPlayer, players.humanIoT):
 			# print("SENDING:", self.turnPlayer.position - 1)
-			newMsg = messageUtil.buildToShadowMsg("move", int(self.turnPlayer.position - 1), int(move))
+			newMsg = messageUtil.buildToShadowMsg("move", int(self.turnPlayer.position), int(move))
 			awsGateway.instance.sendMsgToIoT(self.turnPlayer.playerName, newMsg)
 		if self.visualize:
 			self.draw_board()

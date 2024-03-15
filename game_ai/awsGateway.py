@@ -16,7 +16,13 @@ class awsGateway():
 
 
     def receiveMsgFromSQS(self):
-        response = self.sqs.receive_message(QueueUrl=self.queueUrl, WaitTimeSeconds=QUEUE_MSG_WAIT_TIME)
+        while(True):
+            try:
+                response = self.sqs.receive_message(QueueUrl=self.queueUrl, WaitTimeSeconds=QUEUE_MSG_WAIT_TIME)
+                break
+            except:
+                exit(1)
+                
 
         # If a message is received, print it
         try:

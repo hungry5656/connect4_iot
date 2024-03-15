@@ -56,12 +56,12 @@ class messageUtil():
         print("DEBUG: parsing...................")
         print(tempMsg["sender"])
         if tempMsg["sender"] == 1:
-            print("fjdaskljdfsklajfsklajfkldsajfldas11111111111111111111111111111111")
+            # print("fjdaskljdfsklajfsklajfkldsajfldas11111111111111111111111111111111")
             return -1, None
         else:
             if tempMsg["messageType"] != "cmd":
-                print("fjdaskljdfsklajfsklajfkldsajfldas2222222222222222222222222222222")
+                # print("fjdaskljdfsklajfsklajfkldsajfldas2222222222222222222222222222222")
                 return -1, None
             else:
-                print("fjdaskljdfsklajfsklajfkldsajfldas33333333333333333333333333333333")
+                # print("fjdaskljdfsklajfsklajfkldsajfldas33333333333333333333333333333333")
                 return 0, tempMsg
