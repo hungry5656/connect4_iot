@@ -19,25 +19,21 @@ class awsGateway():
         while(True):
             try:
                 response = self.sqs.receive_message(QueueUrl=self.queueUrl, WaitTimeSeconds=QUEUE_MSG_WAIT_TIME)
-                break
+                if response['Messages']:
+                    message = response['Messages'][0]
+                    messageBody = message['Body']
+                    receiptHandle = message['ReceiptHandle']
+                    self.sqs.delete_message(
+                        QueueUrl=self.queueUrl,
+                        ReceiptHandle=receiptHandle
+                    )
+                    return messageBody, 0
+            except KeyboardInterrupt:
+                print("")
+                exit()
             except:
-                exit(1)
+                pass
                 
-
-        # If a message is received, print it
-        try:
-            if response['Messages']:
-                message = response['Messages'][0]
-                messageBody = message['Body']
-                receiptHandle = message['ReceiptHandle']
-                self.sqs.delete_message(
-                    QueueUrl=self.queueUrl,
-                    ReceiptHandle=receiptHandle
-                )
-                return messageBody, 0
-        except:
-            print('No messages received')
-            return "ERROR", -1
 
     def sendMsgToIoT(self, name, message):
         print("DEBUG: sending msg to {name} with message: {message}")

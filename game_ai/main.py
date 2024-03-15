@@ -93,11 +93,8 @@ if __name__ == '__main__':
 			if parseCode2 != 0:
 				print("ERROR: parse failed")
 				continue
-			elif message2["shadowName"] != message["shadowName"]:
-				print("ERROR: Same connection twice")
-				continue
 			elif message2["message"] == gameConstant.START_GAME:
-				player2 = humanIoT(2, seed, message["shadowName"])
+				player2 = humanIoT(2, seed, message2["shadowName"])
 			else:
 				print("ERROR: not a start command")
 				continue
@@ -107,8 +104,8 @@ if __name__ == '__main__':
 		if isMultiplayer:
 			newMsg2 = messageUtil.buildToShadowMsg("cmd", 1, gameConstant.SET_PLAYER1)
 			awsGateway.instance.sendMsgToIoT(player2.playerName, newMsg2)
-		print(type(player1))
-		print(type(player2))
+		print(player1.playerName)
+		print(player2.playerName)
 		c4 = connect4(player1, player2, board_shape=(w, l), visualize=visualize,
 					limit_players=limit_players, time_limit=time_limit, verbose=verbose)
 		c4.play()
