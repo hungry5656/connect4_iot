@@ -206,6 +206,9 @@ unsigned int getUsrInput(unsigned int stateId) {
             }
             ResetFlag();
             finishFlag = 0;
+        } else {
+            // read from accelerometer
+
         }
     }
 }

@@ -27,6 +27,7 @@
 #include "pin_mux_config.h"
 #include "gpio_if.h"
 #include "uart_if.h"
+#include "i2c_if.h"
 
 // external libraries
 #include "tv_code.h"

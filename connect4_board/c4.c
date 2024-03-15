@@ -106,7 +106,6 @@ static bool do_move(player_t* player, unsigned int selected_column) {
         return true;
     }
 
-    // TODO: Pick color based on player
     GAME.board[row][selected_column] = player->id;
     drawToken(row, selected_column, player->color);
 
@@ -153,7 +152,7 @@ static unsigned int play_turn() {
 static unsigned int wait_turn(unsigned int *moveReceived) {
     drawMessage(MSG_WAIT, YELLOW);
     // Poll AWS for state update
-    char msgReceived[200];
+    char msgReceived[4096];
     *moveReceived = 300;
     pollMsg(iTLSSockID, msgReceived);
     unsigned int codeP = parseServerMsg(msgReceived, moveReceived, GAME.local_player->id, 0);

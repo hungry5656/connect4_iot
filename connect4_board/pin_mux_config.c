@@ -57,8 +57,8 @@ void PinMuxConfig(void)
     //
     // Set unused pins to PIN_MODE_0 with the exception of JTAG pins 16,17,19,20
     //
-    PinModeSet(PIN_01, PIN_MODE_0);
-    PinModeSet(PIN_02, PIN_MODE_0);
+    //PinModeSet(PIN_01, PIN_MODE_0);
+    //PinModeSet(PIN_02, PIN_MODE_0);
     PinModeSet(PIN_03, PIN_MODE_0);
     PinModeSet(PIN_04, PIN_MODE_0);
     PinModeSet(PIN_06, PIN_MODE_0);
@@ -67,6 +67,8 @@ void PinMuxConfig(void)
     PinModeSet(PIN_50, PIN_MODE_0);
     PinModeSet(PIN_52, PIN_MODE_0);
     PinModeSet(PIN_53, PIN_MODE_0);
+    PinModeSet(PIN_58, PIN_MODE_0);
+    PinModeSet(PIN_59, PIN_MODE_0);
     PinModeSet(PIN_60, PIN_MODE_0);
     PinModeSet(PIN_61, PIN_MODE_0);
     PinModeSet(PIN_62, PIN_MODE_0);
@@ -78,6 +80,7 @@ void PinMuxConfig(void)
     PRCMPeripheralClkEnable(PRCM_GPIOA1, PRCM_RUN_MODE_CLK);
     PRCMPeripheralClkEnable(PRCM_GPIOA2, PRCM_RUN_MODE_CLK);
     PRCMPeripheralClkEnable(PRCM_GPIOA3, PRCM_RUN_MODE_CLK);
+    PRCMPeripheralClkEnable(PRCM_I2CA0, PRCM_RUN_MODE_CLK);
     PRCMPeripheralClkEnable(PRCM_GSPI, PRCM_RUN_MODE_CLK);
     PRCMPeripheralClkEnable(PRCM_UARTA0, PRCM_RUN_MODE_CLK);
     PRCMPeripheralClkEnable(PRCM_UARTA1, PRCM_RUN_MODE_CLK);
@@ -107,6 +110,16 @@ void PinMuxConfig(void)
     GPIODirModeSet(GPIOA3_BASE, 0x10, GPIO_DIR_MODE_OUT);
 
     //
+    // Configure PIN_01 for I2C0 I2C_SCL
+    //
+    PinTypeI2C(PIN_01, PIN_MODE_1);
+
+    //
+    // Configure PIN_02 for I2C0 I2C_SDA
+    //
+    PinTypeI2C(PIN_02, PIN_MODE_1);
+
+    //
     // Configure PIN_05 for SPI0 GSPI_CLK
     //
     PinTypeSPI(PIN_05, PIN_MODE_7);
@@ -125,14 +138,4 @@ void PinMuxConfig(void)
     // Configure PIN_57 for UART0 UART0_RX
     //
     PinTypeUART(PIN_57, PIN_MODE_3);
-
-    //
-    // Configure PIN_58 for UART1 UART1_TX
-    //
-    PinTypeUART(PIN_58, PIN_MODE_6);
-
-    //
-    // Configure PIN_59 for UART1 UART1_RX
-    //
-    PinTypeUART(PIN_59, PIN_MODE_6);
 }
