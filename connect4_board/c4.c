@@ -223,15 +223,22 @@ static unsigned int check_game_over_c4(unsigned int move_col, player_t* last_mov
     int row = move_row;
     int col = move_col;
     count = 0;
-    int up = 0; // unused??
-    int down_count = 0; // used for drawing the line
+    //int up = 0; // unused??
+    //int down_count = 0; // used for drawing the line
 
+    // Up & left from the chip
     while (row > -1 && col > -1 && GAME.board[row][col] == last_move_player->id) {
         count++;
         row--;
         col--;
     }
-    down_count = count;
+    //down_count = count;
+    if(count >= 4) {
+        drawWinLine(move_row, move_col, row, col);
+        return 1;
+    }
+
+    // Down & right from the chip
     row = move_row + 1;
     col = move_col + 1;
 
@@ -249,16 +256,23 @@ static unsigned int check_game_over_c4(unsigned int move_col, player_t* last_mov
     row = move_row;
     col = move_col;
     count = 0;
-    up = 0;
-    down_count = 0;
+    // = 0;
+    //down_count = 0;
 
+    // Down & left from the chip
     while (row > -1 && col > -1 && GAME.board[row][col] == last_move_player->id) {
         count++;
         row++;
         col--;
     }
-    down_count = count;
-    row = move_row + 1;
+    //down_count = count;
+    if (count >= 4) {
+        drawWinLine(move_row, move_col, row, col);
+        return 1;
+    }
+
+    // Up & right from the chip
+    row = move_row - 1;
     col = move_col + 1;
 
     while (row < BOARD_WIDTH && col < BOARD_HEIGHT && GAME.board[row][col] == last_move_player->id) {
