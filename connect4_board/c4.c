@@ -155,7 +155,9 @@ static unsigned int wait_turn(unsigned int *moveReceived) {
     // Poll AWS for state update
     char msgReceived[4096];
     *moveReceived = 300;
+    MAP_UtilsDelay(20000000);
     pollMsg(iTLSSockID, msgReceived);
+    Report("\r\n%s\r\n", msgReceived);
     unsigned int codeP = parseServerMsg(msgReceived, moveReceived, GAME.local_player->id, 0);
     do_move(GAME.local_player->opponent, *moveReceived);
     // Report("\r\nlocal id : %d\r\nOpponent Move: %d\r\n", GAME.local_player->opponent->id, moveReceived);
@@ -309,8 +311,8 @@ bool init_c4t(unsigned int isAI, unsigned int levelIdx, int socketId) {
     }
 
     // send request to server
-    char msgSend[200] = "";
-    char msgReceived[512];
+    char msgSend[4096] = "";
+    char msgReceived[4096];
     char player_name1[8] = "";
     char player_name2[8] = "";
     unsigned int cmdReceived = 300;
@@ -335,12 +337,13 @@ bool init_c4t(unsigned int isAI, unsigned int levelIdx, int socketId) {
     
     if (cmdReceived == SET_PLAYER0) {
         // Report("SET_PLAYER0\r\n");
-        player1_is_local == 1;
+        player1_is_local = 1;
     } else {
         if (cmdReceived != SET_PLAYER1) {
             return true;
         }
-        player1_is_local == 0;
+        player1_is_local = 0;
+        MAP_UtilsDelay(8000000);
     }
 
     // Input validation
@@ -449,10 +452,11 @@ bool start_game_c4() {
         if (GAME.player_turn == GAME.local_player) {
             last_move = play_turn();
             // Report("Received the user input\r\n");
-            char msgSend[200] = "";
+            char msgSend[4096] = "";
             buildToServerMsg(msgSend, last_move, 0);
             http_post(iTLSSockID, msgSend);
         } else {
+            Report("jfksdjlksdjflksd: %d\r\n", last_move);
             wait_turn(&last_move);
             Report("last_move: %d\r\n", last_move);
         }

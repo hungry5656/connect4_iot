@@ -817,9 +817,9 @@ int pollMsg(int iTLSSockID, char* msgReceived){
     while(1){
         // 0.5 sec delay
         MAP_UtilsDelay(4000000);
-        // Report("DEBUG: POLLING\r\n");
+        Report("DEBUG: POLLING\r\n");
         if (http_get(iTLSSockID, msgReceived) < 0) {
-            // Report("ERROR: return false when do GET\r\n");
+            Report("ERROR: return false when do GET\r\n");
             return -1;
         }
         if (isValidResponse(msgReceived) == 1) {

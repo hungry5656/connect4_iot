@@ -105,7 +105,7 @@ int tls_connect();
 int connectToAccessPoint();
 int http_post(int iTLSSockID, char* msgReceived);
 int http_get(int iTLSSockID, char *msgReceived);
-int pollingMsg(int iTLSSockID, char* msgReceived);
+int pollMsg(int iTLSSockID, char* msgReceived);
 
 char* jsonWrapMessage(char*);
 
