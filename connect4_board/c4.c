@@ -170,13 +170,13 @@ static unsigned int check_game_over_c4(unsigned int move_col, player_t* last_mov
     unsigned int move_row = GAME.lowest_empty_col_index[move_col] + 1;
 
     unsigned int min_row_index = imax(move_col - 3, 0);
-    unsigned int max_row_index = imin(move_col + 3, BOARD_HEIGHT - 1);
+    unsigned int max_row_index = imin(move_col + 3, BOARD_WIDTH - 1);
     unsigned int max_col_index = imax(move_row - 3, 0);
-    unsigned int min_col_index = imin(move_row + 3, BOARD_WIDTH - 1);
+    unsigned int min_col_index = imin(move_row + 3, BOARD_HEIGHT - 1);
 
-    int min_left_diag[2] = {imax(move_col - 3, move_col), imin(move_row + 3, BOARD_WIDTH - 1)};
-    int max_left_diag[2] = {imin(move_col + 3, BOARD_HEIGHT - 1), imax(move_row - 3, 0)};
-    int min_right_diag[2] = {imin(move_col + 3, move_col), imin(move_row + 3, BOARD_WIDTH - 1)};
+    int min_left_diag[2] = {imax(move_col - 3, move_col), imin(move_row + 3, BOARD_HEIGHT - 1)};
+    int max_left_diag[2] = {imin(move_col + 3, BOARD_WIDTH - 1), imax(move_row - 3, 0)};
+    int min_right_diag[2] = {imin(move_col + 3, move_col), imin(move_row + 3, BOARD_HEIGHT - 1)};
     int max_right_diag[2] = {imax(move_col - 3, 0), imax(move_row - 3, 0)};
 
     // Horizontal
@@ -235,7 +235,7 @@ static unsigned int check_game_over_c4(unsigned int move_col, player_t* last_mov
     row = move_row + 1;
     col = move_col + 1;
 
-    while (row < BOARD_WIDTH && col < BOARD_HEIGHT && GAME.board[row][col] == last_move_player->id) {
+    while (row < BOARD_HEIGHT && col < BOARD_WIDTH && GAME.board[row][col] == last_move_player->id) {
         count++;
         row++;
         col++;
